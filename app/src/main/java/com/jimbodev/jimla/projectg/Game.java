@@ -43,10 +43,12 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     private int goalNodeX, goalNodeY;
     ArrayList<ArrayList<Node>> nodes;
 
-    Rect dest;
-    Bitmap bitmap;
+    static float RATIO;
+    Rect rectBackground;
+    Bitmap bitmapBackground;
 
     ArrayList<Boid> boids;
+    Buildable cannon;
 
     public void init() {
         ourHolder = getHolder();
@@ -59,17 +61,19 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 WIDTH = view.getWidth();
                 HEIGHT = view.getHeight();
 
-                bitmap = BitmapFactory.decodeResource(
+                bitmapBackground = BitmapFactory.decodeResource(
                         getResources(),
                         R.drawable.battlefield1
                 );
 
-                float ratio = getRatio(bitmap.getWidth(), bitmap.getHeight());
-                dest = new Rect(0, 0, (int) (bitmap.getWidth() * ratio), (int) (bitmap.getHeight() * ratio));
+                //Background bitmap decides ratio
+                RATIO = getRatio(bitmapBackground.getWidth(), bitmapBackground.getHeight());
+                rectBackground = new Rect(0, 0, (int) (bitmapBackground.getWidth() * RATIO), (int) (bitmapBackground.getHeight() * RATIO));
 
                 createMapNodes();
 
                 boids = new ArrayList<>();
+                cannon = new Buildable(100, 400, getResources());
 
                 ready = true;
             }
@@ -77,7 +81,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     }
 
     private float getRatio(int w, int h) {
-        // Dimension with greatest overhang outside screen decides the ratio
+        // Dimension with greatest overhang outside screen decides the RATIO
         if (w - WIDTH > h - HEIGHT) {
             return (float) WIDTH / w;
         }
@@ -214,7 +218,8 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
             Paint paint = new Paint();
 
-            canvas.drawBitmap(bitmap, new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight()), dest, null);
+            //canvas.drawBitmap(bitmapBackground, new Rect(0, 0, bitmapBackground.getWidth(), bitmapBackground.getHeight()), rectBackground, null);
+            cannon.show(canvas);
 
             paint.setTextSize(50);
             paint.setStyle(Paint.Style.FILL);
