@@ -6,28 +6,18 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Random;
 
-class Boid extends Vector {
-    private Vector velocity, acceleration;
-    private float maxSpeed = 10.0f, maxForce = 5.0f, size;
-
+class Boid extends Mobile {
     private int perceptionRadius = 30;
 
     private Pathfinder pathfinder;
-    private Node startNode, goalNode, nextTargetNode;
+    private Node nextTargetNode, goalNode;
     private ListIterator<Node> iter;
 
     Boid(float x, float y, float size, Node startNode, Node goalNode) {
-        super(x, y);
-        this.size = size;
-        velocity = new Vector(0, 0);
-        acceleration = new Vector(0, 0);
+        super(x, y, size, new Random().nextInt(10) + 2, 5, null);
 
-        Random r = new Random();
-        maxSpeed = r.nextInt(10) + 2;
-
-        this.startNode = startNode;
-        this.goalNode = goalNode;
         this.nextTargetNode = startNode;
+        this.goalNode = goalNode;
 
 
         pathfinder = new Pathfinder(startNode, goalNode);
@@ -41,7 +31,7 @@ class Boid extends Vector {
         if (nextTargetNode != null) {
             distance = (float) Math.hypot(x - nextTargetNode.getRealX(), y - nextTargetNode.getRealY());
 
-            acceleration.add(moveToTarget(nextTargetNode));
+            acceleration.add(targetPosition(new Vector(nextTargetNode.getRealX(), nextTargetNode.getRealY())));
 
             if (!iter.hasNext()) {
                 if (distance < 5) {
@@ -98,21 +88,6 @@ class Boid extends Vector {
         return (float) Math.hypot(goalNode.getRealX() - x, goalNode.getRealY() - y);
     }
 
-
-    private Vector moveToTarget(Node next) {
-        return target(new Vector(next.getRealX(), next.getRealY()));
-    }
-
-    private Vector target(Vector screenPos) {
-        Vector steering = new Vector(0, 0);
-        steering.add(screenPos);
-        steering.sub(this);
-        steering.setMag(maxSpeed);
-        //steering.sub(velocity);
-        steering.limit(maxForce);
-        return steering;
-    }
-
     private void steering(ArrayList<Boid> boids) {
         Vector steeringSeperation = new Vector(0, 0);
         int total = 0;
@@ -136,10 +111,6 @@ class Boid extends Vector {
             steeringSeperation.limit(maxForce);
         }
         acceleration.add(steeringSeperation);
-    }
-
-    float getSize() {
-        return size;
     }
 
     float getSpeed() {
