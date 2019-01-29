@@ -49,6 +49,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
     ArrayList<Boid> boids;
     Buildable cannon;
+    ArrayList<Projectile> projectiles;
 
     int degress = 0;
 
@@ -75,7 +76,8 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 createMapNodes();
 
                 boids = new ArrayList<>();
-                cannon = new Buildable(200, 200, getResources());
+                cannon = new Buildable(0, 0, getResources());
+                projectiles = new ArrayList<>();
 
                 ready = true;
             }
@@ -172,6 +174,12 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         for(Boid b : boids)
             b.update(boids);
 
+        if(boids.size() > 0)
+            cannon.update(boids.get(boids.size()-1), projectiles);
+
+        for(Projectile p : projectiles)
+            p.update();
+
         if (getButton(MainActivity.B.START_BUTTON) == 1) {
             updateNodes();
             boids.add(new Boid(startNode.getRealX(), startNode.getRealY(), 20, startNode, goalNode));
@@ -221,6 +229,11 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             Paint paint = new Paint();
 
             canvas.drawBitmap(bitmapBackground, new Rect(0, 0, bitmapBackground.getWidth(), bitmapBackground.getHeight()), rectBackground, null);
+
+            paint.setARGB(255, 0, 255, 0);
+            for(Projectile p : projectiles)
+                canvas.drawCircle(p.x, p.y, 20, paint);
+
             cannon.show(canvas);
 
             paint.setTextSize(50);
