@@ -26,7 +26,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     private volatile boolean playing, ready;
     public static int WIDTH, HEIGHT;
 
-    final Handler handler = new Handler();
+    final static Handler HANDLER = new Handler();
     private boolean selectPointActive = true;
     private boolean longClick = false;
     private boolean continuousPress = false;
@@ -170,6 +170,22 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     }
 
     public void update() {
+
+        ArrayList<Vector> remove = new ArrayList<>();
+
+        for (Projectile p : projectiles) {
+            for (Boid b : boids) {
+                if (b.checkCollision(p, p.getSize())) {
+                    //b.changeHealth(-100);
+                    //p.setActive(false);
+                    remove.add(p);
+                    remove.add(b);
+                }
+            }
+        }
+        boids.removeAll(remove);
+        projectiles.removeAll(remove);
+
 
         for(Boid b : boids)
             b.update(boids);
@@ -358,10 +374,10 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            handler.postDelayed(mLongPressed, ViewConfiguration.getLongPressTimeout());
+            HANDLER.postDelayed(mLongPressed, ViewConfiguration.getLongPressTimeout());
         }
         if ((event.getAction() == MotionEvent.ACTION_UP)) {
-            handler.removeCallbacks(mLongPressed);
+            HANDLER.removeCallbacks(mLongPressed);
             if (longClick) {
                 longPressAction(event);
                 longClick = false;

@@ -3,9 +3,9 @@ package com.jimbodev.jimla.projectg;
 public class Mobile extends Stationary {
     Vector velocity, acceleration;
     float maxSpeed, maxForce;
-    Vector target;
+    private Vector target;
 
-    public Mobile(float x, float y, float size, float maxSpeed, float maxForce, Vector target) {
+    Mobile(float x, float y, float size, float maxSpeed, float maxForce, Vector target) {
         super(x, y, size);
         this.maxSpeed = maxSpeed;
         this.maxForce = maxForce;

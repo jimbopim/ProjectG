@@ -13,6 +13,8 @@ class Boid extends Mobile {
     private Node nextTargetNode, goalNode;
     private ListIterator<Node> iter;
 
+    private int health = 100;
+
     Boid(float x, float y, float size, Node startNode, Node goalNode) {
         super(x, y, size, new Random().nextInt(10) + 2, 5, null);
 
@@ -111,6 +113,12 @@ class Boid extends Mobile {
             steeringSeperation.limit(maxForce);
         }
         acceleration.add(steeringSeperation);
+    }
+
+    void changeHealth(int change) {
+        health += change;
+        if(health < 0)
+            health = 0;
     }
 
     float getSpeed() {
