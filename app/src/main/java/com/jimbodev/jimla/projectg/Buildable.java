@@ -23,11 +23,7 @@ class Buildable extends Vector {
     Buildable(float x, float y, Resources resources) {
         super(x, y);
 
-        bitmap = BitmapFactory.decodeResource(
-                resources,
-                R.drawable.objects_table
-        );
-        bitmap = Bitmap.createScaledBitmap(bitmap, sheetW, sheetH, false);
+        createBitmap(resources);
 
         baseSource = new Rect(baseSourceX, baseSourceY, baseSourceX + realWidth, baseSourceY + realHeight);
         weaponSource = new Rect(weaponSourceX, weaponSourceY, weaponSourceX + realWidth, weaponSourceY + realHeight);
@@ -46,6 +42,14 @@ class Buildable extends Vector {
         projectiles.add(new Projectile(getCenterX(), getCenterY(), target, this));
         cooldown = true;
         Game.HANDLER.postDelayed(coolDownCounter, 1000);
+    }
+
+    private void createBitmap(Resources resources) {
+        bitmap = BitmapFactory.decodeResource(
+                resources,
+                R.drawable.objects_table
+        );
+        bitmap = Bitmap.createScaledBitmap(bitmap, sheetW, sheetH, false);
     }
 
     Runnable coolDownCounter = new Runnable() {
