@@ -1,70 +1,51 @@
 package com.jimbodev.jimla.projectg;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
 import java.util.ArrayList;
 
-class Buildable extends Vector {
-    private Bitmap bitmap;
-    private Rect baseSource, weaponSource, dest;
-    private int realWidth = 64, realHeight = 64;
-    private int sizeX = realWidth * 5;
-    private int sizeY = realHeight * 5;
-    private int baseSourceX = realWidth * 0, baseSourceY = realHeight * 0;
-    private int weaponSourceX = realWidth * 0, weaponSourceY = realHeight * 1;
-    private int sheetW = 659, sheetH = 359;
+class Buildable extends Stationary implements Attacker{
+    private Rect layer2Source;
+    private int layer2Col = 0, layer2Row = 1;
+    private int layer2SourceX = realWidth * layer2Col, layer2SourceY = realHeight * layer2Row;
     private double barrelAngle = 0;
     private boolean cooldown = false;
 
-    Buildable(float x, float y, Resources resources) {
-        super(x, y);
+    Buildable(float x, float y) {
+        super(x, y, 64, 64);
 
-        createBitmap(resources);
-
-        baseSource = new Rect(baseSourceX, baseSourceY, baseSourceX + realWidth, baseSourceY + realHeight);
-        weaponSource = new Rect(weaponSourceX, weaponSourceY, weaponSourceX + realWidth, weaponSourceY + realHeight);
-        dest = new Rect((int) x, (int) y, (int) x + sizeX, (int) y + sizeY); //TODO * ratio
+        layer2Source = new Rect(layer2SourceX, layer2SourceY, layer2SourceX + realWidth, layer2SourceY + realHeight);
     }
 
-    void update(Vector target, ArrayList<Projectile> projectiles) {
+    void update(Vector target) {
         if(target != null)
             barrelAngle = getBarrelAngle(target);
-
-        if(!cooldown && target != null)
-            shoot(target, projectiles);
     }
 
-    private void shoot(Vector target, ArrayList<Projectile> projectiles) {
-        projectiles.add(new Projectile(getCenterX(), getCenterY(), target, this));
-        cooldown = true;
-        Game.HANDLER.postDelayed(coolDownCounter, 1000);
+    @Override
+    public void shoot(Vector target, ArrayList<Projectile> projectiles) {
+        if (!cooldown && target != null) {
+            projectiles.add(new Projectile(getCenterX(), getCenterY(), target, this, 35));
+            cooldown = true;
+            Game.HANDLER.postDelayed(coolDownCounter, 1000);
+        }
     }
 
-    private void createBitmap(Resources resources) {
-        bitmap = BitmapFactory.decodeResource(
-                resources,
-                R.drawable.objects_table
-        );
-        bitmap = Bitmap.createScaledBitmap(bitmap, sheetW, sheetH, false);
-    }
-
-    Runnable coolDownCounter = new Runnable() {
+    private Runnable coolDownCounter = new Runnable() {
+        @Override
         public void run() {
             cooldown = false;
         }
     };
 
+    @Override
     void show(Canvas canvas) {
-        canvas.drawBitmap(bitmap, baseSource, dest, null);
-
+        super.show(canvas);
         canvas.save();
 
         canvas.rotate((float) barrelAngle, getCenterX(), getCenterY());
-        canvas.drawBitmap(bitmap, weaponSource, dest, null);
+        canvas.drawBitmap(bitmap, layer2Source, dest, null);
 
         canvas.restore();
     }
@@ -76,11 +57,8 @@ class Buildable extends Vector {
         return angle;
     }
 
-    private float getCenterX() {
-        return x + (sizeX/2f);
-    }
+    @Override
+    public void targetHit() {
 
-    private float getCenterY() {
-        return y + (sizeY/2f);
     }
 }

@@ -69,6 +69,8 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                         R.drawable.battlefield1
                 );
 
+                Stationary.setResources(getResources());
+
                 //Background bitmap decides ratio
                 RATIO = getRatio(bitmapBackground.getWidth(), bitmapBackground.getHeight());
                 rectBackground = new Rect(0, 0, (int) (bitmapBackground.getWidth() * RATIO), (int) (bitmapBackground.getHeight() * RATIO));
@@ -76,7 +78,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 createMapNodes();
 
                 boids = new ArrayList<>();
-                cannon = new Buildable(0, 0, getResources());
+                cannon = new Buildable(0, 0);
                 projectiles = new ArrayList<>();
 
                 ready = true;
@@ -149,11 +151,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 if (nodes.get(i).get(j) != null && Math.hypot(x - (nodes.get(i).get(j).x * gap) - gap, y - (nodes.get(i).get(j).y * gap) - gap) < size * 2) {
                     if (nodes.get(i).get(j) != startNode && nodes.get(i).get(j) != goalNode) {
                         if (!pointerModeSet) {
-                            if (nodes.get(i).get(j).isActive()) {
-                                pointerModeRemove = true;
-                            }
-                            else
-                                pointerModeRemove = false;
+                            pointerModeRemove = nodes.get(i).get(j).isActive();
 
                             pointerModeSet = true;
                         }
@@ -175,11 +173,14 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
         for (Projectile p : projectiles) {
             for (Boid b : boids) {
-                if (b.checkCollision(p, p.getSize())) {
+                if (b.checkCollision(p, p.getWidth())) {
                     //b.changeHealth(-100);
-                    //p.setActive(false);
+                    //p.setRemovable(false);
+                    p.hit();
+                    b.hit(p);
+                    if(b.isRemovable())
+                        remove.add(b);
                     remove.add(p);
-                    remove.add(b);
                 }
             }
         }
@@ -190,8 +191,11 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         for(Boid b : boids)
             b.update(boids);
 
-        if(boids.size() > 0)
-            cannon.update(boids.get(boids.size()-1), projectiles);
+        if (boids.size() > 0) {
+            cannon.update(boids.get(boids.size() - 1));
+            if(cannon instanceof Attacker)
+                cannon.shoot(boids.get(boids.size() - 1), projectiles);
+        }
 
         for(Projectile p : projectiles)
             p.update();
@@ -215,6 +219,39 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         }
     }
 
+    public void draw() {
+        if (ourHolder.getSurface().isValid()) {
+            Canvas canvas = ourHolder.lockCanvas();
+            canvas.drawColor(Color.LTGRAY);
+
+
+            Paint paint = new Paint();
+
+            canvas.drawBitmap(bitmapBackground, new Rect(0, 0, bitmapBackground.getWidth(), bitmapBackground.getHeight()), rectBackground, null);
+
+            paint.setARGB(255, 0, 0, 0);
+            for(Projectile p : projectiles)
+                canvas.drawCircle(p.x, p.y, 20, paint);
+
+            cannon.show(canvas);
+
+            paint.setTextSize(50);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setARGB(255, 0, 0, 0);
+
+            if (getButton(MainActivity.B.SWITCH) == 1)
+                showPathSystem(canvas, paint);
+
+            paint.setARGB(255, 255, 0, 0);
+            for(Boid boid : boids) {
+                canvas.drawCircle(boid.x, boid.y, boid.getWidth(), paint);
+                canvas.drawText("Mag: :" + boid.getSpeed(), 10, getHeight() - 10, paint);
+            }
+
+            ourHolder.unlockCanvasAndPost(canvas);
+        }
+    }
+
     private void printActiveNodes() {
         StringBuilder s = new StringBuilder();
         s.append("{{");
@@ -234,39 +271,6 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         }
         if (s.toString().length() <= 3000)
             Log.i("hejsan", s.toString());
-    }
-
-    public void draw() {
-        if (ourHolder.getSurface().isValid()) {
-            Canvas canvas = ourHolder.lockCanvas();
-            canvas.drawColor(Color.LTGRAY);
-
-
-            Paint paint = new Paint();
-
-            canvas.drawBitmap(bitmapBackground, new Rect(0, 0, bitmapBackground.getWidth(), bitmapBackground.getHeight()), rectBackground, null);
-
-            paint.setARGB(255, 0, 255, 0);
-            for(Projectile p : projectiles)
-                canvas.drawCircle(p.x, p.y, 20, paint);
-
-            cannon.show(canvas);
-
-            paint.setTextSize(50);
-            paint.setStyle(Paint.Style.FILL);
-            paint.setARGB(255, 0, 0, 0);
-
-            if (getButton(MainActivity.B.SWITCH) == 1)
-                showPathSystem(canvas, paint);
-
-            paint.setARGB(255, 255, 0, 0);
-            for(Boid boid : boids) {
-                canvas.drawCircle(boid.x, boid.y, boid.getSize(), paint);
-                canvas.drawText("Mag: :" + boid.getSpeed(), 10, getHeight() - 10, paint);
-            }
-
-            ourHolder.unlockCanvasAndPost(canvas);
-        }
     }
 
     private void showPathSystem(Canvas canvas, Paint paint) {
@@ -397,6 +401,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     }
 
     Runnable mLongPressed = new Runnable() {
+        @Override
         public void run() {
             longClick = true;
             continuousPress = true;

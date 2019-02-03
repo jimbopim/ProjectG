@@ -1,12 +1,12 @@
 package com.jimbodev.jimla.projectg;
 
-public class Mobile extends Stationary {
+class Mobile extends Stationary {
     Vector velocity, acceleration;
     float maxSpeed, maxForce;
     private Vector target;
 
-    Mobile(float x, float y, float size, float maxSpeed, float maxForce, Vector target) {
-        super(x, y, size);
+    Mobile(float x, float y, float width, float height, float maxSpeed, float maxForce, Vector target) {
+        super(x, y, width, height);
         this.maxSpeed = maxSpeed;
         this.maxForce = maxForce;
         this.target = target;
@@ -17,7 +17,7 @@ public class Mobile extends Stationary {
 
     void update() {
 
-        acceleration.add(targetPosition(target));
+        acceleration.add(getTargetPosition(target));
         velocity.add(acceleration);
         velocity.limit(maxSpeed);
 
@@ -25,7 +25,7 @@ public class Mobile extends Stationary {
         acceleration.mult(0);
     }
 
-    Vector targetPosition(Vector target) {
+    Vector getTargetPosition(Vector target) {
         return target(new Vector(target.x, target.y));
     }
 

@@ -18,7 +18,7 @@ public class MainActivity extends Activity {
     public static HashMap<B, Integer> buttonsPressed = new HashMap<>();
 
     public enum B {
-        START_BUTTON, CLEAR_BUTTON, RESTART_BUTTON, SEEK_BAR, SWITCH;
+        START_BUTTON, CLEAR_BUTTON, RESTART_BUTTON, SEEK_BAR, SWITCH
     }
 
     @Override

@@ -6,16 +6,18 @@ import android.util.Log;
 
 import java.util.Random;
 
-public class Vector {
+class Vector {
     float x, y;
     Vector(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    void add(Vector value) {
-        this.x += value.x;
-        this.y += value.y;
+    void add(Vector vector) {
+        if (vector != null) {
+            this.x += vector.x;
+            this.y += vector.y;
+        }
     }
 
     void add(float value) {
@@ -74,11 +76,11 @@ public class Vector {
         mult(value);
     }
 
-    public float getMag() {
+    float getMag() {
         return (float) Math.hypot(this.x, this.y);
     }
 
-    public double getAngle() {
+    private double getAngle() {
         double angle = Math.atan2(y, x) - Math.PI / 2;
         angle += Math.toRadians(-90);
 

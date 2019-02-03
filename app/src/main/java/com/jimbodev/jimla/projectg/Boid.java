@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Random;
 
-class Boid extends Mobile {
+class Boid extends Mobile implements Runner{
     private int perceptionRadius = 30;
 
     private Pathfinder pathfinder;
@@ -16,7 +16,7 @@ class Boid extends Mobile {
     private int health = 100;
 
     Boid(float x, float y, float size, Node startNode, Node goalNode) {
-        super(x, y, size, new Random().nextInt(10) + 2, 5, null);
+        super(x, y, size, size, new Random().nextInt(10) + 2, 5, null);
 
         this.nextTargetNode = startNode;
         this.goalNode = goalNode;
@@ -28,13 +28,28 @@ class Boid extends Mobile {
     }
 
     void update(ArrayList<Boid> boids) {
-        float distance = 0;
+
+        float distance = getDistance();
+        acceleration.add(getTargetPosition(new Vector(nextTargetNode.getRealX(), nextTargetNode.getRealY())));
+        updateNextTargetNode(distance);
+
+        acceleration.add(steering(boids));
+
+        velocity.add(acceleration);
+        velocity.limit(maxSpeed);
+
+        float dis = maxSpeed * 10f; //100
+        if (remainingDistanceF() <= dis && velocity.getMag() > 0) {
+            slowDownVelocity(distance, dis);
+        }
+
+        add(velocity);
+        acceleration.mult(0);
+    }
+
+    private void updateNextTargetNode(float distance) {
         int minDistance = 50;
         if (nextTargetNode != null) {
-            distance = (float) Math.hypot(x - nextTargetNode.getRealX(), y - nextTargetNode.getRealY());
-
-            acceleration.add(targetPosition(new Vector(nextTargetNode.getRealX(), nextTargetNode.getRealY())));
-
             if (!iter.hasNext()) {
                 if (distance < 5) {
                     Log.i("hejsan", "No more target");
@@ -47,19 +62,14 @@ class Boid extends Mobile {
                 }
             }
         }
+    }
 
-        steering(boids);
-
-        velocity.add(acceleration);
-        velocity.limit(maxSpeed);
-
-        float dis = maxSpeed * 10f; //100
-        if (remainingDistanceF() <= dis && velocity.getMag() > 0) {
-            slowDownVelocity(distance, dis);
+    private float getDistance() {
+        float distance = 0;
+        if (nextTargetNode != null) {
+            distance = (float) Math.hypot(x - nextTargetNode.getRealX(), y - nextTargetNode.getRealY());
         }
-
-        add(velocity);
-        acceleration.mult(0);
+        return distance;
     }
 
     private void slowDownVelocity(float distance, float dis) {
@@ -90,7 +100,7 @@ class Boid extends Mobile {
         return (float) Math.hypot(goalNode.getRealX() - x, goalNode.getRealY() - y);
     }
 
-    private void steering(ArrayList<Boid> boids) {
+    private Vector steering(ArrayList<Boid> boids) {
         Vector steeringSeperation = new Vector(0, 0);
         int total = 0;
 
@@ -112,16 +122,23 @@ class Boid extends Mobile {
             steeringSeperation.sub(velocity);
             steeringSeperation.limit(maxForce);
         }
-        acceleration.add(steeringSeperation);
+        return steeringSeperation;
     }
 
     void changeHealth(int change) {
         health += change;
-        if(health < 0)
+        if (health <= 0) {
             health = 0;
+            setRemovable(true);
+        }
     }
 
     float getSpeed() {
         return (float) Math.hypot(velocity.x, velocity.y);
+    }
+
+    @Override
+    public void hit(Projectile projectile) {
+        changeHealth(-projectile.getDamage());
     }
 }
