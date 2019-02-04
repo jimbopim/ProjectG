@@ -78,7 +78,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 createMapNodes();
 
                 boids = new ArrayList<>();
-                cannon = new Buildable(0, 0);
+                cannon = new Buildable(0, 0, 2);
                 projectiles = new ArrayList<>();
 
                 ready = true;
@@ -231,7 +231,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
             paint.setARGB(255, 0, 0, 0);
             for(Projectile p : projectiles)
-                canvas.drawCircle(p.x, p.y, 20, paint);
+                p.show(canvas);
 
             cannon.show(canvas);
 

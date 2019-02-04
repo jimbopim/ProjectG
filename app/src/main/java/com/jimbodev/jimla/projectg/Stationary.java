@@ -9,17 +9,16 @@ import android.graphics.Rect;
 class Stationary extends Vector {
     private static Resources resources;
     Bitmap bitmap;
-    private float width, height;
     private boolean removable = false;
     int realWidth = 64, realHeight = 64;
-    int sizeX = realWidth * 1;
-    int sizeY = realHeight * 1;
+    int width = realWidth * 1;
+    int height = realHeight * 1;
     private int sheetW = 659, sheetH = 359;
     private int layer1Col = 0, layer1Row = 0;
     Rect layer1Source, dest;
     private int layer1SourceX = realWidth * layer1Col, layer1SourceY = realHeight * layer1Row;
 
-    Stationary(float x, float y, float width, float height) {
+    Stationary(float x, float y, int width, int height) {
         super(x, y);
         this.width = width;
         this.height = height;
@@ -27,7 +26,7 @@ class Stationary extends Vector {
         createBitmap(resources);
 
         layer1Source = new Rect(layer1SourceX, layer1SourceY, layer1SourceX + realWidth, layer1SourceY + realHeight);
-        dest = new Rect((int) x, (int) y, (int) x + sizeX, (int) y + sizeY); //TODO * ratio
+        dest = new Rect((int) x, (int) y, (int) x + this.width, (int) y + this.height); //TODO * ratio
     }
 
     static void setResources(Resources resources) {
@@ -42,20 +41,20 @@ class Stationary extends Vector {
         bitmap = Bitmap.createScaledBitmap(bitmap, sheetW, sheetH, false);
     }
 
-    float getWidth() {
+    int getWidth() {
         return width;
     }
 
-    float getHeight() {
+    int getHeight() {
         return height;
     }
 
     float getCenterX() {
-        return x + (sizeX/2f);
+        return x + (width /2f);
     }
 
     float getCenterY() {
-        return y + (sizeY/2f);
+        return y + (height /2f);
     }
 
     boolean isRemovable() {
