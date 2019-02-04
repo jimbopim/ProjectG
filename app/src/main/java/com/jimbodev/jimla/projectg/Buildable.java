@@ -2,6 +2,7 @@ package com.jimbodev.jimla.projectg;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -12,6 +13,9 @@ class Buildable extends Stationary implements Attacker{
     private double barrelAngle = 0;
     private boolean cooldown = false;
     private int cooldownTimer = 1000;
+    private int fireTimer = cooldownTimer / 20;
+    private int fired = 0;
+
 
     Buildable(float x, float y, float scale) {
         super(x, y, (int)(64 * scale), (int)(64 * scale));
@@ -31,6 +35,16 @@ class Buildable extends Stationary implements Attacker{
         }
     };
 
+    private Runnable updateFireTimer = new Runnable() {
+        @Override
+        public void run() {
+            fired--;
+            if(fired > 0)
+                Game.HANDLER.postDelayed(updateFireTimer, 1);
+            Log.i("hejsan", "Timer");
+        }
+    };
+
     private double getBarrelAngle(Vector target) {
         double angle = Math.atan2(getCenterY() - target.y, getCenterX() - target.x) - Math.PI / 2;
         angle += Math.toRadians(-90);
@@ -46,9 +60,11 @@ class Buildable extends Stationary implements Attacker{
     @Override
     public void shoot(Vector target, ArrayList<Projectile> projectiles) {
         if (!cooldown && target != null) {
-            projectiles.add(new Projectile(getCenterX(), getCenterY(), target, this, 35));
+            projectiles.add(new Cannonball(getCenterX(), getCenterY(), target, this, 35));
             cooldown = true;
+            fired = fireTimer;
             Game.HANDLER.postDelayed(resetCooldown, cooldownTimer);
+            Game.HANDLER.post(updateFireTimer);
         }
     }
 
@@ -58,6 +74,13 @@ class Buildable extends Stationary implements Attacker{
         canvas.save();
 
         canvas.rotate((float) barrelAngle, getCenterX(), getCenterY());
+
+        float sin = (float) Math.sin(Math.toRadians(fired * (180f / fireTimer)));
+
+        if (fired > 0) {
+            canvas.translate(-20 * sin, 0);
+        }
+
         canvas.drawBitmap(bitmap, layer2Source, dest, null);
 
         canvas.restore();

@@ -3,7 +3,7 @@ package com.jimbodev.jimla.projectg;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-class Projectile extends Mobile {
+abstract class Projectile extends Mobile {
     private Attacker parent;
     private int damage;
 
