@@ -73,7 +73,8 @@ class Buildable extends Stationary implements Attacker{
         if (!cooldown && target != null) {
             projectiles.add(new Cannonball(getCenterX(), getCenterY(), target, this, 35));
             cooldown = true;
-            animations.addNewAnimation("fire", fireAnimationTimer);
+            //animations.addNewAnimation("fire", fireAnimationTimer);
+            animations.start("fire");
             //fired = fireAnimationTimer;
             //lastUpdated = System.currentTimeMillis();
             Game.HANDLER.postDelayed(resetCooldown, cooldownTimer);
@@ -90,7 +91,7 @@ class Buildable extends Stationary implements Attacker{
 
         float sin = (float) Math.sin(Math.toRadians(animations.getTimeLeft("fire") * (180f / fireAnimationTimer)));
 
-        if (animations.getTimeLeft("fire") > 0) {
+        if (animations.isPlaying("fire")) {
             canvas.translate(-20 * sin, 0);
             //testUpdate();
         }

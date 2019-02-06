@@ -8,11 +8,35 @@ public class AnimationHandler {
 
     private HashMap<String, Animation> animations = new HashMap<>();
 
-    void addNewAnimation(String name, int length) {
+    Animation addNewAnimation(String name, int length) {
         if (!contains(name))
             animations.put(name, new Animation(length));
         else
             Log.e("hejsan", "Entry already exists - addNewAnimation method, animation class");
+        
+        return animations.get(name);
+    }
+    
+    void startAnimation(String name) {
+    	animations.get(name).start();
+    }
+    
+    void reset(String name)
+	    Animation animation = animations.get(name);
+	    animation.timeLeft = animation.animationLength;
+	    animation.playing = false;
+    }
+    
+    void restart(String name) {
+    	reset(name);
+	    startAnimation(name);
+    }
+    
+    boolean isPlaying(String name) {
+    	if(animations.get(name).timeLeft > 0)
+		    return true;
+		else
+			return false;
     }
 
     private Animation get(String name) {
@@ -44,12 +68,16 @@ public class AnimationHandler {
     private class Animation {
         int animationLength, timeLeft;
         long lastUpdated;
-
+        boolean playing;
 
         Animation(int animationLength) {
             this.animationLength = animationLength;
             this.timeLeft = animationLength;
-            lastUpdated = System.currentTimeMillis();
+            playing = false;
+        }
+        void start() {
+        	lastUpdated = System.currentTimeMillis();
+	        playing = true;
         }
     }
 
