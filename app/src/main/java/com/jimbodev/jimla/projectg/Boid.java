@@ -30,7 +30,10 @@ class Boid extends Mobile implements Runner{
     void update(ArrayList<Boid> boids) {
 
         float distance = getDistance();
-        acceleration.add(getTargetPosition(new Vector(nextTargetNode.getRealX(), nextTargetNode.getRealY())));
+
+        if(nextTargetNode != null)
+            acceleration.add(getTargetPosition(new Vector(nextTargetNode.getRealX(), nextTargetNode.getRealY())));
+
         updateNextTargetNode(distance);
 
         acceleration.add(steering(boids));

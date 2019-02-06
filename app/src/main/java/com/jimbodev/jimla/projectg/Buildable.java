@@ -1,6 +1,7 @@
 package com.jimbodev.jimla.projectg;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -13,8 +14,9 @@ class Buildable extends Stationary implements Attacker{
     private double barrelAngle = 0;
     private boolean cooldown = false;
     private int cooldownTimer = 1000;
-    private int fireTimer = cooldownTimer / 20;
+    private int fireAnimationTimer = cooldownTimer / 5;
     private int fired = 0;
+    private long lastUpdated;
 
 
     Buildable(float x, float y, float scale) {
@@ -38,12 +40,20 @@ class Buildable extends Stationary implements Attacker{
     private Runnable updateFireTimer = new Runnable() {
         @Override
         public void run() {
-            fired--;
+
+            /*fired--;
             if(fired > 0)
                 Game.HANDLER.postDelayed(updateFireTimer, 1);
-            Log.i("hejsan", "Timer");
+            Log.i("hejsan", "Timer");*/
         }
     };
+
+    void testUpdate() {
+        long diff = System.currentTimeMillis() - lastUpdated;
+        lastUpdated = System.currentTimeMillis();
+        Log.i("hejsan", "diff: " + diff);
+        fired -= diff;
+    }
 
     private double getBarrelAngle(Vector target) {
         double angle = Math.atan2(getCenterY() - target.y, getCenterX() - target.x) - Math.PI / 2;
@@ -62,27 +72,31 @@ class Buildable extends Stationary implements Attacker{
         if (!cooldown && target != null) {
             projectiles.add(new Cannonball(getCenterX(), getCenterY(), target, this, 35));
             cooldown = true;
-            fired = fireTimer;
+            fired = fireAnimationTimer;
+            lastUpdated = System.currentTimeMillis();
             Game.HANDLER.postDelayed(resetCooldown, cooldownTimer);
-            Game.HANDLER.post(updateFireTimer);
+            //Game.HANDLER.post(updateFireTimer);
         }
     }
 
     @Override
     void show(Canvas canvas) {
         super.show(canvas);
-        canvas.save();
 
+        canvas.save();
         canvas.rotate((float) barrelAngle, getCenterX(), getCenterY());
 
-        float sin = (float) Math.sin(Math.toRadians(fired * (180f / fireTimer)));
+        float sin = (float) Math.sin(Math.toRadians(fired * (180f / fireAnimationTimer)));
 
         if (fired > 0) {
             canvas.translate(-20 * sin, 0);
+            testUpdate();
         }
 
         canvas.drawBitmap(bitmap, layer2Source, dest, null);
-
         canvas.restore();
+        Paint paint = new Paint();
+        paint.setTextSize(50);
+        canvas.drawText("Fired: " + fired, 100, Game.HEIGHT - 10, paint);
     }
 }

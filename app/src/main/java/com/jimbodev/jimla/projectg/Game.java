@@ -53,6 +53,11 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
     int degress = 0;
 
+    ArrayList<Long> FPS = new ArrayList<>();
+    long averageFps = 0;
+    boolean updateFps = true;
+    private int timeBetweenFpsUpdates = 200;
+
     public void init() {
         ourHolder = getHolder();
         ready = false;
@@ -80,6 +85,8 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 boids = new ArrayList<>();
                 cannon = new Buildable(0, 0, 2);
                 projectiles = new ArrayList<>();
+
+                HANDLER.post(updateFpsTimer);
 
                 ready = true;
             }
@@ -245,8 +252,9 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             paint.setARGB(255, 255, 0, 0);
             for(Boid boid : boids) {
                 canvas.drawCircle(boid.x, boid.y, boid.getWidth(), paint);
-                canvas.drawText("Mag: :" + boid.getSpeed(), 10, getHeight() - 10, paint);
             }
+
+            canvas.drawText("" + averageFps, 10, getHeight() - 10, paint);
 
             ourHolder.unlockCanvasAndPost(canvas);
         }
@@ -313,6 +321,21 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         }
     }
 
+    void calculateFPS(long prevTime) {
+        FPS.add(1000 / (System.currentTimeMillis() - prevTime));
+
+        if (updateFps) {
+            averageFps = 0;
+            for(long l : FPS)
+                averageFps += l;
+
+            averageFps = averageFps / FPS.size();
+
+            FPS.clear();
+            updateFps = false;
+        }
+    }
+
     @Override
     public void run() {
 
@@ -322,12 +345,16 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         int FRAMES_PER_SECOND = 100;
         int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
         long next_game_tick = System.currentTimeMillis();
+        long prevTime = 0;
 
         long sleep_time = 0;
 
         while (playing) {
             update();
             draw();
+
+            calculateFPS(prevTime);
+            prevTime = System.currentTimeMillis();
 
             next_game_tick += SKIP_TICKS;
             sleep_time = next_game_tick - System.currentTimeMillis();
@@ -405,6 +432,14 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         public void run() {
             longClick = true;
             continuousPress = true;
+        }
+    };
+
+    Runnable updateFpsTimer = new Runnable() {
+        @Override
+        public void run() {
+            updateFps = true;
+            HANDLER.postDelayed(updateFpsTimer, timeBetweenFpsUpdates);
         }
     };
 
