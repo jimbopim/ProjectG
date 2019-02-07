@@ -14,16 +14,16 @@ class Buildable extends Stationary implements Attacker{
     private boolean cooldown = false;
     private int cooldownTimer = 1000;
     private int fireAnimationTimer = cooldownTimer / 5;
-    AnimationHandler animations;
-
+    AnimationHandlerV2 animations;
+    AnimationHandlerV2.Animation fire;
 
     Buildable(float x, float y, float scale) {
         super(x, y, (int)(64 * scale), (int)(64 * scale));
 
         layer2Source = new Rect(layer2SourceX, layer2SourceY, layer2SourceX + realWidth, layer2SourceY + realHeight);
 
-        animations = new AnimationHandler();
-        animations.addNewAnimation("fire", fireAnimationTimer);
+        animations = new AnimationHandlerV2();
+        fire = animations.createNewAnimation(fireAnimationTimer);
     }
 
     void update(Vector target) {
@@ -73,8 +73,8 @@ class Buildable extends Stationary implements Attacker{
         if (!cooldown && target != null) {
             projectiles.add(new Cannonball(getCenterX(), getCenterY(), target, this, 35));
             cooldown = true;
-            //animations.addNewAnimation("fire", fireAnimationTimer);
-            animations.start("fire");
+            //animations.createNewAnimation("fire", fireAnimationTimer);
+            animations.play(fire);
             //fired = fireAnimationTimer;
             //lastUpdated = System.currentTimeMillis();
             Game.HANDLER.postDelayed(resetCooldown, cooldownTimer);
@@ -89,9 +89,8 @@ class Buildable extends Stationary implements Attacker{
         canvas.save();
         canvas.rotate((float) barrelAngle, getCenterX(), getCenterY());
 
-        float sin = (float) Math.sin(Math.toRadians(animations.getTimeLeft("fire") * (180f / fireAnimationTimer)));
-
-        if (animations.isPlaying("fire")) {
+        if (animations.isPlaying(fire)) {
+            float sin = (float) Math.sin(Math.toRadians(animations.getTimeLeft(fire) * (180f / fireAnimationTimer)));
             canvas.translate(-20 * sin, 0);
             //testUpdate();
         }
@@ -100,6 +99,6 @@ class Buildable extends Stationary implements Attacker{
         canvas.restore();
         Paint paint = new Paint();
         paint.setTextSize(50);
-        canvas.drawText("Fired: " + animations.getTimeLeft("fire"), 100, Game.HEIGHT - 10, paint);
+        canvas.drawText("Fired: " + animations.getTimeLeft(fire), 100, Game.HEIGHT - 10, paint);
     }
 }
