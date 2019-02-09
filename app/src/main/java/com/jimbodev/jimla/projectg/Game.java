@@ -47,7 +47,8 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     Bitmap bitmapBackground;
 
     ArrayList<Boid> boids;
-    ArrayList<Buildable> cannons;
+    ArrayList<Building> attackers;
+    Building placedBuilding;
     ArrayList<Projectile> projectiles;
 
     ConstructionMenu menu;
@@ -83,11 +84,12 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 createMapNodes();
 
                 boids = new ArrayList<>();
-                cannons = new ArrayList<>();
-                cannons.add(new Cannon(100, 200, 2));
+                attackers = new ArrayList<>();
+                attackers.add(new Cannon(100, 200, 2));
+                attackers.add(new ArrowShooter(100, 400, 2));
                 projectiles = new ArrayList<>();
 
-                menu = new ConstructionMenu(cannons.get(0));
+                menu = new ConstructionMenu(attackers);
 
                 HANDLER.post(updateFpsTimer);
 
@@ -180,6 +182,13 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
     public void update() {
 
+        //if (placedBuilding instanceof Cannon) {
+        if(placedBuilding != null) {
+            Log.i("hejsan", "kov");
+            attackers.add(placedBuilding);
+            placedBuilding = null;
+        }
+
         ArrayList<Vector> remove = new ArrayList<>();
 
         for (Projectile p : projectiles) {
@@ -203,10 +212,10 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             b.update(boids);
 
         if (boids.size() > 0) {
-            for (Buildable b : cannons) {
+            for (Building b : attackers) {
                 b.update(boids.get(boids.size() - 1));
                 if (b instanceof Attacker)
-                    ((Cannon) b).shoot(boids.get(boids.size() - 1), projectiles);
+                    ((SimpleAttacker) b).shoot(boids.get(boids.size() - 1), projectiles);
             }
         }
 
@@ -215,7 +224,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
         if (getButton(MainActivity.B.START_BUTTON) == 1) {
             updateNodes();
-            boids.add(new Boid(startNode.getRealX(), startNode.getRealY(), 20, startNode,
+            boids.add(new Boid(startNode.getRealX(), startNode.getRealY(), 20, null, startNode,
                     goalNode));
             resetButton(MainActivity.B.START_BUTTON);
         }
@@ -253,7 +262,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             for (Projectile p : projectiles)
                 p.show(canvas);
 
-            for (Buildable b : cannons)
+            for (Building b : attackers)
                 b.show(canvas);
 
             paint.setTextSize(50);
@@ -391,10 +400,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             switchNode((int) event.getX(), (int) event.getY());
         }
         if (menu.isActive()) {
-            Buildable building = menu.actionUp(event);
-            if (building instanceof Cannon) {
-                cannons.add(new Cannon(event.getX(), event.getY(), 2));
-            }
+            placedBuilding = menu.actionUp(event);
         }
     }
 

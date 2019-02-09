@@ -5,8 +5,8 @@ class Mobile extends Stationary {
     float maxSpeed, maxForce;
     private Vector target;
 
-    Mobile(float x, float y, int width, int height, float maxSpeed, float maxForce, Vector target) {
-        super(x, y, width, height);
+    Mobile(float x, float y, int width, int height, int []type, float maxSpeed, float maxForce, Vector target) {
+        super(x, y, width, height, type);
         this.maxSpeed = maxSpeed;
         this.maxForce = maxForce;
         this.target = target;

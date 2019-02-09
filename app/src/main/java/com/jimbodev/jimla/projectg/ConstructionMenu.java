@@ -7,44 +7,66 @@ import android.view.MotionEvent;
 
 import java.util.ArrayList;
 
-public class ConstructionMenu {
+class ConstructionMenu {
     private boolean active = false;
     private Rect bounds;
     private int windowHeight = 500;
-    private ArrayList<Buildable> buildables = new ArrayList<>();
-    private Buildable picked = null;
-    private Rect icon1, dest;
-    public ConstructionMenu(Buildable b) {
+    private ArrayList<Building> buildings = new ArrayList<>();
+    private Building picked = null;
+    private Rect startIcon, dest;
+    private ArrayList<Rect> icons;
+    ConstructionMenu(ArrayList<Building> b) {
         bounds = new Rect(0, Game.HEIGHT - windowHeight, Game.WIDTH, Game.HEIGHT);
-        buildables.add(b);
-        icon1 = new Rect(30, bounds.top + 30, 30 + buildables.get(0).getWidth(), bounds.top + 30 + buildables.get(0).getHeight()); //Todo Ändra lite
+        buildings.addAll(b);
+        startIcon = new Rect(30, bounds.top + 30, 30 + buildings.get(0).getWidth(), bounds.top + 30 + buildings.get(0).getHeight()); //Todo Ändra lite
         dest = new Rect(0,0,0,0);
+        icons = new ArrayList<>();
+        setupIcons();
     }
 
-    public boolean isActive() {
+    boolean isActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    void setActive(boolean active) {
         this.active = active;
     }
 
+    private void setupIcons() {
+        int countX = 0, countY = 0, w = 128, h = 128;
+        for (Building i : buildings) {
+            Rect place = new Rect(startIcon.left + (w * countX), startIcon.top + (h * countY), startIcon.right + (w * countX), startIcon.bottom + (h * countY));
+            icons.add(place);
+            countX++;
+            if (countX > 4) {
+                countX = 0;
+                countY++;
+            }
+        }
+    }
+
     private void showInteractiveIcons(Canvas canvas) {
-        Buildable i = buildables.get(0);
-        canvas.drawBitmap(i.bitmap, i.layer1Source, icon1, null);
-        canvas.drawBitmap(i.bitmap, i.layer2Source, icon1, null);
+        int i = 0;
+        for (Rect d : icons) {
+            showIcon(canvas, buildings.get(i), d);
+            i++;
+        }
     }
 
-    private void showPickedIcon(Canvas canvas) {
-        Buildable i = buildables.get(0);
-        canvas.drawBitmap(i.bitmap, i.layer1Source, dest, null);
-        canvas.drawBitmap(i.bitmap, i.layer2Source, dest, null);
+    private void showIcon(Canvas canvas, Building b, Rect mDest) {
+        canvas.drawBitmap(b.bitmap, b.layer1Source, mDest, null);
+        canvas.drawBitmap(b.bitmap, b.layer2Source, mDest, null);
     }
 
-    Buildable actionUp(MotionEvent event) {
+    Building actionUp(MotionEvent event) {
         if (picked != null) {
+            picked.x = event.getX();
+            picked.y = event.getY();
+            Building p = picked;
             picked = null;
-            return new Cannon(event.getX(), event.getY(), 2);
+
+            //return new Cannon(event.getX(), event.getY(), 2);
+            return p; //Todo testa picked = null
         }
         else {
             return null;
@@ -52,8 +74,14 @@ public class ConstructionMenu {
     }
 
     void actionDown(MotionEvent event) {
-        if(event.getX() > icon1.left && event.getX() < icon1.right && event.getY() > icon1.top && event.getY() < icon1.bottom)
-            picked = buildables.get(0);
+        int i = 0;
+        for (Rect r : icons) {
+            if (event.getX() > r.left && event.getX() < r.right && event.getY() > r.top && event.getY() < r.bottom) {
+                picked = buildings.get(i);
+                break;
+            }
+            i++;
+        }
     }
 
     void actionMove(MotionEvent event) {
@@ -71,7 +99,7 @@ public class ConstructionMenu {
             paint.setARGB(125, 0, 0 ,0);
 
             if (picked != null) {
-                showPickedIcon(canvas);
+                showIcon(canvas, picked, dest);
             }
             else {
                 canvas.drawRect(bounds, paint);

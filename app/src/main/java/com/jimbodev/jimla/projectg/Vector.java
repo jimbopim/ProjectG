@@ -7,7 +7,7 @@ import android.util.Log;
 import java.util.Random;
 
 class Vector {
-    float x, y;
+    protected float x, y;
     Vector(float x, float y) {
         this.x = x;
         this.y = y;

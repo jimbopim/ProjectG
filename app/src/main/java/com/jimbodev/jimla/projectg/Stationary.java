@@ -15,14 +15,22 @@ class Stationary extends Vector {
     int width = realWidth * 1;
     int height = realHeight * 1;
     private int sheetW = 659, sheetH = 359;
-    private int layer1Col = 0, layer1Row = 0;
+    private int layer1Col;
+    private int layer1Row;
     Rect layer1Source, dest;
-    private int layer1SourceX = realWidth * layer1Col, layer1SourceY = realHeight * layer1Row;
+    private int layer1SourceX, layer1SourceY;
 
-    Stationary(float x, float y, int width, int height) {
+    Stationary(float x, float y, int width, int height, int []type) {
         super(x, y);
         this.width = width;
         this.height = height;
+        if (type != null) {
+            this.layer1Col = type[ObjectType.LAYER1COL];
+            this.layer1Row = type[ObjectType.LAYER1ROW];
+        }
+
+        layer1SourceX = realWidth * layer1Col;
+        layer1SourceY = realHeight * layer1Row;
 
         createBitmap(resources);
 

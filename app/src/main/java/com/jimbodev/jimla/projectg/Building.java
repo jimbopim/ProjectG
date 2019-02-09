@@ -4,14 +4,20 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-class Buildable extends Stationary{
+abstract class Building extends Stationary{
     Rect layer2Source;
-    int layer2Col = 0, layer2Row = 1;
-    int layer2SourceX = realWidth * layer2Col, layer2SourceY = realHeight * layer2Row;
+    int layer2Col;
+    int layer2Row;
+    int layer2SourceX, layer2SourceY;
     double layer2Angle = 0;
 
-    Buildable(float x, float y, float scale) {
-        super(x, y, (int)(64 * scale), (int)(64 * scale));
+    Building(float x, float y, float scale, int []type) {
+        super(x, y, (int)(64 * scale), (int)(64 * scale), type);
+        this.layer2Col = type[ObjectType.LAYER2COL];
+        this.layer2Row = type[ObjectType.LAYER2ROW];
+
+        layer2SourceX = realWidth * layer2Col;
+        layer2SourceY = realHeight * layer2Row;
 
         layer2Source = new Rect(layer2SourceX, layer2SourceY, layer2SourceX + realWidth, layer2SourceY + realHeight);
     }
