@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-abstract class Building extends Stationary{
+abstract class Building extends Stationary {
     Rect layer2Source;
     int layer2Col;
     int layer2Row;

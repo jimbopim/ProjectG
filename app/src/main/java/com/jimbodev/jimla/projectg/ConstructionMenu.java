@@ -60,13 +60,9 @@ class ConstructionMenu {
 
     Building actionUp(MotionEvent event) {
         if (picked != null) {
-            picked.x = event.getX();
-            picked.y = event.getY();
-            Building p = picked;
+            Building temp = picked;
             picked = null;
-
-            //return new Cannon(event.getX(), event.getY(), 2);
-            return p; //Todo testa picked = null
+            return getBuilding(temp, event);
         }
         else {
             return null;
@@ -91,6 +87,13 @@ class ConstructionMenu {
             dest.right = dest.left + picked.getWidth();
             dest.bottom = dest.top + picked.getHeight();
         }
+    }
+
+    private Building getBuilding(Building type, MotionEvent event) {
+        if (type instanceof Cannon)
+            return new Cannon(event.getX(), event.getY(), 2);
+        else
+            return new ArrowShooter(event.getX(), event.getY(), 2);
     }
 
     void show(Canvas canvas) {

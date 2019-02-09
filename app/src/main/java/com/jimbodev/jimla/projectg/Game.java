@@ -182,7 +182,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
     public void update() {
 
-        //if (placedBuilding instanceof Cannon) {
+
         if(placedBuilding != null) {
             Log.i("hejsan", "kov");
             attackers.add(placedBuilding);
