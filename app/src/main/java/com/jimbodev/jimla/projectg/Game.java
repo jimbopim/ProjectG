@@ -48,8 +48,10 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     Bitmap bitmapBackground;
 
     ArrayList<Boid> boids;
-    Buildable cannon;
+    Cannon cannon;
     ArrayList<Projectile> projectiles;
+
+    ConstructionMenu menu;
 
     int degress = 0;
 
@@ -83,8 +85,10 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 createMapNodes();
 
                 boids = new ArrayList<>();
-                cannon = new Buildable(0, 0, 2);
+                cannon = new Cannon(0, 0, 2);
                 projectiles = new ArrayList<>();
+
+                menu = new ConstructionMenu();
 
                 HANDLER.post(updateFpsTimer);
 
@@ -213,7 +217,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             resetButton(MainActivity.B.START_BUTTON);
         }
         if (getButton(MainActivity.B.CLEAR_BUTTON) == 1) {
-
+            menu.setActive(!menu.isActive());
             resetButton(MainActivity.B.CLEAR_BUTTON);
         }
         if (getButton(MainActivity.B.RESTART_BUTTON) == 1) {
@@ -253,6 +257,8 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             for(Boid boid : boids) {
                 canvas.drawCircle(boid.x, boid.y, boid.getWidth(), paint);
             }
+
+            menu.show(canvas);
 
             canvas.drawText("" + averageFps, 10, getHeight() - 10, paint);
 

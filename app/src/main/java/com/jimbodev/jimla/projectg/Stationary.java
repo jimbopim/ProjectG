@@ -72,7 +72,12 @@ class Stationary extends Vector {
             //return ; //TODO Lägg till
     }
 
-    void show(Canvas canvas) {
+    void drawLayer1(Canvas canvas) {
         canvas.drawBitmap(bitmap, layer1Source, dest, null);
+
+    }
+
+    void show(Canvas canvas) {
+        drawLayer1(canvas);
     }
 }
