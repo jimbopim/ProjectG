@@ -28,6 +28,10 @@ class Buildable extends Stationary{
         return angle;
     }
 
+    void drawLayer2(Canvas canvas) {
+        canvas.drawBitmap(bitmap, layer2Source, dest, null);
+    }
+
     void rotateLayer2AgainstTarget(Canvas canvas) {
         canvas.rotate((float) layer2Angle, getCenterX(), getCenterY());
     }
@@ -39,7 +43,7 @@ class Buildable extends Stationary{
         canvas.save();
         rotateLayer2AgainstTarget(canvas);
 
-        canvas.drawBitmap(bitmap, layer2Source, dest, null);
+        drawLayer2(canvas);
         canvas.restore();
     }
 }

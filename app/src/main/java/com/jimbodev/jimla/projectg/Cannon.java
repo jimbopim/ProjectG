@@ -57,7 +57,7 @@ public class Cannon extends Buildable implements Attacker{
             canvas.translate(-20 * sin, 0);
         }
 
-        canvas.drawBitmap(bitmap, layer2Source, dest, null);
+        drawLayer2(canvas);
         canvas.restore();
         Paint paint = new Paint();
         paint.setTextSize(50);

@@ -29,7 +29,6 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     final static Handler HANDLER = new Handler();
     private boolean selectPointActive = true;
     private boolean longClick = false;
-    private boolean continuousPress = false;
 
     private boolean pointerModeRemove = true;
     private boolean pointerModeSet = false;
@@ -48,12 +47,10 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     Bitmap bitmapBackground;
 
     ArrayList<Boid> boids;
-    Cannon cannon;
+    ArrayList<Buildable> cannons;
     ArrayList<Projectile> projectiles;
 
     ConstructionMenu menu;
-
-    int degress = 0;
 
     ArrayList<Long> FPS = new ArrayList<>();
     long averageFps = 0;
@@ -80,15 +77,17 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
                 //Background bitmap decides ratio
                 RATIO = getRatio(bitmapBackground.getWidth(), bitmapBackground.getHeight());
-                rectBackground = new Rect(0, 0, (int) (bitmapBackground.getWidth() * RATIO), (int) (bitmapBackground.getHeight() * RATIO));
+                rectBackground = new Rect(0, 0, (int) (bitmapBackground.getWidth() * RATIO),
+                        (int) (bitmapBackground.getHeight() * RATIO));
 
                 createMapNodes();
 
                 boids = new ArrayList<>();
-                cannon = new Cannon(0, 0, 2);
+                cannons = new ArrayList<>();
+                cannons.add(new Cannon(100, 200, 2));
                 projectiles = new ArrayList<>();
 
-                menu = new ConstructionMenu();
+                menu = new ConstructionMenu(cannons.get(0));
 
                 HANDLER.post(updateFpsTimer);
 
@@ -122,7 +121,8 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         for (int i = 0; i < cols; i++) {
             nodes.add(new ArrayList<Node>());
             for (int j = 0; j < rows; j++) {
-                nodes.get(i).add(new Node(i, j, (i * Game.gap) + Game.gap, (j * Game.gap) + Game.gap));
+                nodes.get(i).add(new Node(i, j, (i * Game.gap) + Game.gap,
+                        (j * Game.gap) + Game.gap));
             }
         }
 
@@ -156,7 +156,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         }
     }
 
-    private void deactivateNode(int x, int y) {
+    private void switchNode(int x, int y) {
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
                 if (nodes.get(i).get(j) != null && Math.hypot(x - (nodes.get(i).get(j).x * gap) - gap, y - (nodes.get(i).get(j).y * gap) - gap) < size * 2) {
@@ -189,7 +189,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                     //p.setRemovable(false);
                     p.hit();
                     b.hit(p);
-                    if(b.isRemovable())
+                    if (b.isRemovable())
                         remove.add(b);
                     remove.add(p);
                 }
@@ -199,25 +199,28 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         projectiles.removeAll(remove);
 
 
-        for(Boid b : boids)
+        for (Boid b : boids)
             b.update(boids);
 
         if (boids.size() > 0) {
-            cannon.update(boids.get(boids.size() - 1));
-            if(cannon instanceof Attacker)
-                cannon.shoot(boids.get(boids.size() - 1), projectiles);
+            for (Buildable b : cannons) {
+                b.update(boids.get(boids.size() - 1));
+                if (b instanceof Attacker)
+                    ((Cannon) b).shoot(boids.get(boids.size() - 1), projectiles);
+            }
         }
 
-        for(Projectile p : projectiles)
+        for (Projectile p : projectiles)
             p.update();
 
         if (getButton(MainActivity.B.START_BUTTON) == 1) {
             updateNodes();
-            boids.add(new Boid(startNode.getRealX(), startNode.getRealY(), 20, startNode, goalNode));
+            boids.add(new Boid(startNode.getRealX(), startNode.getRealY(), 20, startNode,
+                    goalNode));
             resetButton(MainActivity.B.START_BUTTON);
         }
         if (getButton(MainActivity.B.CLEAR_BUTTON) == 1) {
-            menu.setActive(!menu.isActive());
+            toggleMenu();
             resetButton(MainActivity.B.CLEAR_BUTTON);
         }
         if (getButton(MainActivity.B.RESTART_BUTTON) == 1) {
@@ -230,6 +233,11 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         }
     }
 
+    private void toggleMenu() {
+        menu.setActive(!menu.isActive());
+        selectPointActive = !selectPointActive;
+    }
+
     public void draw() {
         if (ourHolder.getSurface().isValid()) {
             Canvas canvas = ourHolder.lockCanvas();
@@ -238,13 +246,15 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
             Paint paint = new Paint();
 
-            canvas.drawBitmap(bitmapBackground, new Rect(0, 0, bitmapBackground.getWidth(), bitmapBackground.getHeight()), rectBackground, null);
+            canvas.drawBitmap(bitmapBackground, new Rect(0, 0, bitmapBackground.getWidth(),
+                    bitmapBackground.getHeight()), rectBackground, null);
 
             paint.setARGB(255, 0, 0, 0);
-            for(Projectile p : projectiles)
+            for (Projectile p : projectiles)
                 p.show(canvas);
 
-            cannon.show(canvas);
+            for (Buildable b : cannons)
+                b.show(canvas);
 
             paint.setTextSize(50);
             paint.setStyle(Paint.Style.FILL);
@@ -254,7 +264,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 showPathSystem(canvas, paint);
 
             paint.setARGB(255, 255, 0, 0);
-            for(Boid boid : boids) {
+            for (Boid boid : boids) {
                 canvas.drawCircle(boid.x, boid.y, boid.getWidth(), paint);
             }
 
@@ -294,31 +304,6 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                     n.show(canvas, paint);
             }
         }
-/*        paint.setARGB(255, 255, 0, 0);
-        for (Node n : pathfinder.getClosedSet()) {
-
-            if (n != null)
-                n.show(canvas, paint);
-        }
-
-        paint.setARGB(255, 0, 255, 0);
-        for (Node n : pathfinder.getOpenSet()) {
-            if (n != null)
-                n.show(canvas, paint);
-        }
-
-        Node temp = null;
-        paint.setARGB(255, 0, 0, 255);
-        paint.setStrokeWidth(5);
-        for (Node n : pathfinder.getTotal_path()) {
-            if (n != null) {
-                n.show(canvas, paint);
-                if (temp != null)
-                    canvas.drawLine(temp.getRealX(), temp.getRealY(), n.getRealX(), n.getRealY(), paint);
-                temp = n;
-
-            }
-        }*/
 
         if (startNode != null && goalNode != null) {
             paint.setARGB(255, 255, 255, 0);
@@ -332,7 +317,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
         if (updateFps) {
             averageFps = 0;
-            for(long l : FPS)
+            for (long l : FPS)
                 averageFps += l;
 
             averageFps = averageFps / FPS.size();
@@ -348,7 +333,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         while (!ready) {
         }
 
-        int FRAMES_PER_SECOND = 100;
+        int FRAMES_PER_SECOND = 60; //60 är vanligtvis max
         int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
         long next_game_tick = System.currentTimeMillis();
         long prevTime = 0;
@@ -370,7 +355,6 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
             }
         }
     }
@@ -392,11 +376,26 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         buttonsPressed.put(b, 0);
     }
 
+    private void downAction(MotionEvent event) {
+        if (menu.isActive()) {
+            menu.actionDown(event);
+        }
+    }
+
+    private void upAction(MotionEvent event) {
+        pointerModeSet = false;
+    }
+
     private void shortPressAction(MotionEvent event) {
         if (selectPointActive) {
-            deactivateNode((int) event.getX(), (int) event.getY());
+            switchNode((int) event.getX(), (int) event.getY());
         }
-        degress += 5;
+        if (menu.isActive()) {
+            Buildable building = menu.actionUp(event);
+            if (building instanceof Cannon) {
+                cannons.add(new Cannon(event.getX(), event.getY(), 2));
+            }
+        }
     }
 
     private void longPressAction(MotionEvent event) {
@@ -404,17 +403,23 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     }
 
     private void moveAction(MotionEvent event) {
-        shortPressAction(event);
+        if (selectPointActive) {
+            shortPressAction(event);
+        }
+        if (menu.isActive()) {
+            menu.actionMove(event);
+        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             HANDLER.postDelayed(mLongPressed, ViewConfiguration.getLongPressTimeout());
+            downAction(event);
         }
-        if ((event.getAction() == MotionEvent.ACTION_UP)) {
+        else if (event.getAction() == MotionEvent.ACTION_UP) {
             HANDLER.removeCallbacks(mLongPressed);
+            upAction(event);
             if (longClick) {
                 longPressAction(event);
                 longClick = false;
@@ -422,13 +427,11 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             else {
                 shortPressAction(event);
             }
-            pointerModeSet = false;
-            continuousPress = false;
         }
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            if (continuousPress) {
-                moveAction(event);
-            }
+        else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            HANDLER.removeCallbacks(mLongPressed);
+            longClick = false;
+            moveAction(event);
         }
         return true;
     }
@@ -437,7 +440,6 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         @Override
         public void run() {
             longClick = true;
-            continuousPress = true;
         }
     };
 

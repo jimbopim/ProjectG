@@ -10,7 +10,8 @@ class Stationary extends Vector {
     private static Resources resources;
     Bitmap bitmap;
     private boolean removable = false;
-    int realWidth = 64, realHeight = 64;
+    protected int realWidth = 64;
+    protected int realHeight = 64;
     int width = realWidth * 1;
     int height = realHeight * 1;
     private int sheetW = 659, sheetH = 359;
@@ -74,7 +75,6 @@ class Stationary extends Vector {
 
     void drawLayer1(Canvas canvas) {
         canvas.drawBitmap(bitmap, layer1Source, dest, null);
-
     }
 
     void show(Canvas canvas) {
