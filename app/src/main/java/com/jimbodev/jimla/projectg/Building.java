@@ -16,8 +16,17 @@ abstract class Building extends Stationary {
         this.layer2Col = type[ObjectType.LAYER2COL];
         this.layer2Row = type[ObjectType.LAYER2ROW];
 
-        layer2SourceX = realWidth * layer2Col;
-        layer2SourceY = realHeight * layer2Row;
+        setLayer2Source(0);
+        /*layer2SourceX = (realWidth * layer2Col) + layer2Col + 1;
+        layer2SourceY = (realHeight * layer2Row) + layer2Row + 1;
+
+        layer2Source = new Rect(layer2SourceX, layer2SourceY, layer2SourceX + realWidth, layer2SourceY + realHeight);*/
+    }
+
+    void setLayer2Source(int frameCount) {
+        int row = layer2Row + frameCount;
+        layer2SourceX = (realWidth * layer2Col) + layer2Col + 1;
+        layer2SourceY = (realHeight * row) + row + 1;
 
         layer2Source = new Rect(layer2SourceX, layer2SourceY, layer2SourceX + realWidth, layer2SourceY + realHeight);
     }

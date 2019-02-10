@@ -29,13 +29,20 @@ class Stationary extends Vector {
             this.layer1Row = type[ObjectType.LAYER1ROW];
         }
 
-        layer1SourceX = realWidth * layer1Col;
-        layer1SourceY = realHeight * layer1Row;
+        setLayer1Source(0);
 
         createBitmap(resources);
 
-        layer1Source = new Rect(layer1SourceX, layer1SourceY, layer1SourceX + realWidth, layer1SourceY + realHeight);
+
         dest = new Rect((int) x, (int) y, (int) x + this.width, (int) y + this.height); //TODO * ratio
+    }
+
+    void setLayer1Source(int frameCount) {
+        int row = layer1Row + (frameCount * layer1Row);
+        layer1SourceX = (realWidth * layer1Col) + layer1Col + 1;
+        layer1SourceY = (realHeight * row) + row + 1;
+
+        layer1Source = new Rect(layer1SourceX, layer1SourceY, layer1SourceX + realWidth, layer1SourceY + realHeight);
     }
 
     static void setResources(Resources resources) {

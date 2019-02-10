@@ -85,7 +85,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
                 boids = new ArrayList<>();
                 attackers = new ArrayList<>();
-                attackers.add(new Cannon(100, 200, 2));
+                //attackers.add(new Cannon(100, 200, 2));
                 attackers.add(new ArrowShooter(100, 400, 2));
                 projectiles = new ArrayList<>();
 
