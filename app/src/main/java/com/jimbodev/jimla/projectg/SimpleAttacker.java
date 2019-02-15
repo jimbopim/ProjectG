@@ -3,6 +3,7 @@ package com.jimbodev.jimla.projectg;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -14,20 +15,41 @@ class SimpleAttacker extends Building implements Attacker{
     private TimeTrackerHandler animations;
     private TimeTrackerHandler.TimeTracker fire;
 
-    int frames = 3;
+    int frames;
     int currentFrame = 0;
 
-    SimpleAttacker(float x, float y, float scale, int []type) {
-        super(x, y, scale, type);
+    SimpleAttacker(float x, float y, ObjectType.Tower type) {
+        super(x, y, (ObjectType.Bitmap) type);
 
         animations = new TimeTrackerHandler();
         fire = animations.createNewTimeTracker(fireAnimationTimer);
+
+        frames = type.getFireframes();
+    }
+
+    private void updateAnimation(Canvas canvas) {
+        int timeLeft = animations.getTimeLeft(fire);
+
+        if (animations.isPlaying(fire)) {
+            float sin = (float) Math.sin(Math.toRadians(timeLeft * (180f / fireAnimationTimer)));
+            canvas.translate(-20 * sin, 0);
+
+            updateFrame(timeLeft);
+        }
+        else
+            setLayer2Source(currentFrame = 0);
     }
 
     void updateFrame(int timeLeft) {
-        for (int i = 1; i <= frames; i++) {
-            if(timeLeft > (fireAnimationTimer/frames) * (i - 1) && timeLeft < (fireAnimationTimer/frames) * i)
-                currentFrame = i - 1;
+        int j = 1;
+        for (int i = frames; i > 0; i--) {
+            if (timeLeft > (fireAnimationTimer / frames) * (i - 1) && timeLeft < (fireAnimationTimer / frames) * i) {
+                currentFrame = j;
+                Log.i("hejsan", "TimeLeft: " + timeLeft + " currentFrame: " + currentFrame);
+                break;
+            }
+            else
+                j++;
         }
 
         setLayer2Source(currentFrame);
@@ -75,19 +97,13 @@ class SimpleAttacker extends Building implements Attacker{
         canvas.save();
         rotateLayer2AgainstTarget(canvas);
 
-        int timeLeft = animations.getTimeLeft(fire);
-
-        if (animations.isPlaying(fire)) {
-            float sin = (float) Math.sin(Math.toRadians(timeLeft * (180f / fireAnimationTimer)));
-            canvas.translate(-20 * sin, 0);
-
-            updateFrame(timeLeft);
-        }
+        updateAnimation(canvas);
 
         drawLayer2(canvas);
         canvas.restore();
+
         Paint paint = new Paint();
         paint.setTextSize(50);
-        canvas.drawText("Fired: " + timeLeft, 100, Game.HEIGHT - 10, paint);
+        canvas.drawText("Fired: " + animations.getTimeLeft(fire), 100, Game.HEIGHT - 10, paint);
     }
 }

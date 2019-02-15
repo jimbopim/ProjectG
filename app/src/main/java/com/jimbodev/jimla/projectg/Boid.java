@@ -16,12 +16,11 @@ class Boid extends Mobile implements Runner{
 
     private int health = 100;
 
-    Boid(float x, float y, int size, int []type, Node startNode, Node goalNode) {
-        super(x, y, size, size, type, new Random().nextInt(10) + 2, 5, null);
+    Boid(float x, float y, ObjectType.Sprite type, Node startNode, Node goalNode) {
+        super(x, y, type, new Random().nextInt(10) + 2, 5, null);
 
         this.nextTargetNode = startNode;
         this.goalNode = goalNode;
-
 
         pathfinder = new Pathfinder(startNode, goalNode);
         pathfinder.update(false);

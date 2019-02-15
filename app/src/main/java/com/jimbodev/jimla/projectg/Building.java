@@ -11,10 +11,10 @@ abstract class Building extends Stationary {
     int layer2SourceX, layer2SourceY;
     double layer2Angle = 0;
 
-    Building(float x, float y, float scale, int []type) {
-        super(x, y, (int)(64 * scale), (int)(64 * scale), type);
-        this.layer2Col = type[ObjectType.LAYER2COL];
-        this.layer2Row = type[ObjectType.LAYER2ROW];
+    Building(float x, float y, ObjectType.Bitmap type) {
+        super(x, y, type);
+        this.layer2Col = type.getLayer2Col();
+        this.layer2Row = type.getLayer2Row();
 
         setLayer2Source(0);
         /*layer2SourceX = (realWidth * layer2Col) + layer2Col + 1;

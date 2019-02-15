@@ -20,15 +20,10 @@ class Stationary extends Vector {
     Rect layer1Source, dest;
     private int layer1SourceX, layer1SourceY;
 
-    Stationary(float x, float y, int width, int height, int []type) {
+    Stationary(float x, float y, ObjectType.Sprite type) {
         super(x, y);
-        this.width = width;
-        this.height = height;
-        if (type != null) {
-            this.layer1Col = type[ObjectType.LAYER1COL];
-            this.layer1Row = type[ObjectType.LAYER1ROW];
-        }
 
+        setBounds(type);
         setLayer1Source(0);
 
         createBitmap(resources);
@@ -47,6 +42,18 @@ class Stationary extends Vector {
 
     static void setResources(Resources resources) {
         Stationary.resources = resources;
+    }
+
+    private void setBounds(ObjectType.Sprite type) {
+        if (type instanceof ObjectType.Bitmap) {
+            ObjectType.Bitmap type1 = (ObjectType.Bitmap) type;
+            this.width = ObjectType.FRAMEWIDTH * type1.getScale();
+            this.height = ObjectType.FRAMEHEIGHT * type1.getScale();
+            this.layer1Col = type1.getLayer1Col();
+            this.layer1Row = type1.getLayer1Row();
+        }
+        else
+            this.width = type.getSize();
     }
 
     private void createBitmap(Resources resources) {

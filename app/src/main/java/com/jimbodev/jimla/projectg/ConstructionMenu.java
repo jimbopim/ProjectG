@@ -91,9 +91,9 @@ class ConstructionMenu {
 
     private Building getBuilding(Building type, MotionEvent event) {
         if (type instanceof Cannon)
-            return new Cannon(event.getX(), event.getY(), 2);
+            return new Cannon(event.getX(), event.getY());
         else
-            return new ArrowShooter(event.getX(), event.getY(), 2);
+            return new ArrowShooter(event.getX(), event.getY());
     }
 
     void show(Canvas canvas) {

@@ -1,7 +1,7 @@
 package com.jimbodev.jimla.projectg;
 
 class ArrowShooter extends SimpleAttacker {
-    ArrowShooter(float x, float y, float scale) {
-        super(x, y, scale, ObjectType.ARROWSHOOTER);
+    ArrowShooter(float x, float y) {
+        super(x, y, ObjectType.ARROWSHOOTER);
     }
 }

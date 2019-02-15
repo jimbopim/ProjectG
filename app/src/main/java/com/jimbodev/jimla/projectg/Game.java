@@ -85,8 +85,8 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
                 boids = new ArrayList<>();
                 attackers = new ArrayList<>();
-                //attackers.add(new Cannon(100, 200, 2));
-                attackers.add(new ArrowShooter(100, 400, 2));
+                //attackers.add(new Cannon(100, 200));
+                attackers.add(new ArrowShooter(100, 400));
                 projectiles = new ArrayList<>();
 
                 menu = new ConstructionMenu(attackers);
@@ -224,8 +224,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
         if (getButton(MainActivity.B.START_BUTTON) == 1) {
             updateNodes();
-            boids.add(new Boid(startNode.getRealX(), startNode.getRealY(), 20, null, startNode,
-                    goalNode));
+            boids.add(new Boid(startNode.getRealX(), startNode.getRealY(), ObjectType.BOID, startNode, goalNode));
             resetButton(MainActivity.B.START_BUTTON);
         }
         if (getButton(MainActivity.B.CLEAR_BUTTON) == 1) {
