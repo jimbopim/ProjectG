@@ -32,6 +32,11 @@ class ObjectType {
         }
 
         @Override
+        public int getRecoil() {
+            return 20;
+        }
+
+        @Override
         public int getLayer1Col() {
             return 0;
         }
@@ -66,6 +71,11 @@ class ObjectType {
         @Override
         public int getFireframes() {
             return 2;
+        }
+
+        @Override
+        public int getRecoil() {
+            return 0;
         }
 
         @Override
@@ -118,6 +128,7 @@ class ObjectType {
 
     interface Tower {
         int getFireframes();
+        int getRecoil();
     }
 
     interface Bitmap extends Sprite{

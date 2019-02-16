@@ -12,6 +12,7 @@ class SimpleAttacker extends Building implements Attacker{
     private boolean cooldown = false;
     private int cooldownTimer = 5000;
     private int fireAnimationTimer = cooldownTimer / 5;
+    private int recoil;
     private TimeTrackerHandler animations;
     private TimeTrackerHandler.TimeTracker fire;
 
@@ -25,14 +26,17 @@ class SimpleAttacker extends Building implements Attacker{
         fire = animations.createNewTimeTracker(fireAnimationTimer);
 
         frames = type.getFireframes();
+        recoil = type.getRecoil();
     }
 
     private void updateAnimation(Canvas canvas) {
         int timeLeft = animations.getTimeLeft(fire);
 
         if (animations.isPlaying(fire)) {
-            float sin = (float) Math.sin(Math.toRadians(timeLeft * (180f / fireAnimationTimer)));
-            canvas.translate(-20 * sin, 0);
+            if (recoil > 0) {
+                float sin = (float) Math.sin(Math.toRadians(timeLeft * (180f / fireAnimationTimer)));
+                canvas.translate(-recoil * sin, 0);
+            }
 
             updateFrame(timeLeft);
         }
@@ -42,7 +46,7 @@ class SimpleAttacker extends Building implements Attacker{
 
     void updateFrame(int timeLeft) {
         int j = 1;
-        for (int i = frames; i > 0; i--) {
+        for (int i = frames; i > 0 && frames > 1; i--) {
             if (timeLeft > (fireAnimationTimer / frames) * (i - 1) && timeLeft < (fireAnimationTimer / frames) * i) {
                 currentFrame = j;
                 Log.i("hejsan", "TimeLeft: " + timeLeft + " currentFrame: " + currentFrame);
