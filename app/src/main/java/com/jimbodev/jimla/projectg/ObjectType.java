@@ -25,7 +25,7 @@ class ObjectType {
         }
     }
 
-    private static class cCANNON implements Tower, Bitmap{
+    private static class cCANNON implements Tower, Bitmap {
         @Override
         public int getFireframes() {
             return 1;
@@ -37,13 +37,13 @@ class ObjectType {
         }
 
         @Override
-        public int []getLayer1Coord() {
-            return new int[]{0,0};
+        public int[] getLayer1Coord() {
+            return new int[]{0, 0};
         }
 
         @Override
         public int[] getLayer2Coord() {
-            return new int[]{0,1};
+            return new int[]{0, 1};
         }
 
         @Override
@@ -52,7 +52,7 @@ class ObjectType {
         }
     }
 
-    private static class cARROWSHOOTER implements Tower, Bitmap{
+    private static class cARROWSHOOTER implements Tower, Bitmap {
         @Override
         public int getFireframes() {
             return 2;
@@ -101,23 +101,20 @@ class ObjectType {
         int getRecoil();
     }
 
-    interface Bitmap extends Drawable {
-        int []getLayer1Coord();
-        int []getLayer2Coord();
-        int getScale();
-    }
-
-    interface Paintable extends Drawable{
-        int getSize();
-    }
-
-    interface Drawable {
-    }
-
     interface Movable {
         float getMaxSpeed();
         float getMaxForce();
     }
 
+    interface Bitmap extends Drawable {
+        int[] getLayer1Coord();
+        int[] getLayer2Coord();
+        int getScale();
+    }
 
+    interface Paintable extends Drawable {
+        int getSize();
+    }
+
+    interface Drawable { }
 }
