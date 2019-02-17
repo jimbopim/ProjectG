@@ -8,7 +8,7 @@ abstract class Projectile extends Mobile {
     private int damage;
 
     Projectile(float x, float y, ObjectType.Movable type, Vector target, Attacker parent, int damage) {
-        super(x, y, (ObjectType.Sprite) type, type.getMaxSpeed(), type.getMaxForce(), target);
+        super(x, y, (ObjectType.Paintable) type, type.getMaxSpeed(), type.getMaxForce(), target);
         this.parent = parent;
         this.damage = damage;
     }

@@ -1,31 +1,24 @@
 package com.jimbodev.jimla.projectg;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Rect;
 
 abstract class Building extends Stationary {
     Rect layer2Source;
-    int layer2Col;
-    int layer2Row;
+    int []layer2Coord;
     int layer2SourceX, layer2SourceY;
     double layer2Angle = 0;
 
     Building(float x, float y, ObjectType.Bitmap type) {
         super(x, y, type);
-        this.layer2Col = type.getLayer2Col();
-        this.layer2Row = type.getLayer2Row();
+        this.layer2Coord = type.getLayer2Coord();
 
         setLayer2Source(0);
-        /*layer2SourceX = (realWidth * layer2Col) + layer2Col + 1;
-        layer2SourceY = (realHeight * layer2Row) + layer2Row + 1;
-
-        layer2Source = new Rect(layer2SourceX, layer2SourceY, layer2SourceX + realWidth, layer2SourceY + realHeight);*/
     }
 
     void setLayer2Source(int frameCount) {
-        int row = layer2Row + frameCount;
-        layer2SourceX = (realWidth * layer2Col) + layer2Col + 1;
+        int row = layer2Coord[1] + frameCount;
+        layer2SourceX = (realWidth * layer2Coord[0]) + layer2Coord[0] + 1;
         layer2SourceY = (realHeight * row) + row + 1;
 
         layer2Source = new Rect(layer2SourceX, layer2SourceY, layer2SourceX + realWidth, layer2SourceY + realHeight);

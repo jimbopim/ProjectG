@@ -8,7 +8,7 @@ class ObjectType {
     final static cCANNONBALL CANNONBALL = new cCANNONBALL();
     final static cBOID BOID = new cBOID();
 
-    private static class cBOID implements Movable, Sprite {
+    private static class cBOID implements Movable, Paintable {
         @Override
         public int getSize() {
             return 20;
@@ -37,33 +37,18 @@ class ObjectType {
         }
 
         @Override
-        public int getLayer1Col() {
-            return 0;
+        public int []getLayer1Coord() {
+            return new int[]{0,0};
         }
 
         @Override
-        public int getLayer1Row() {
-            return 0;
-        }
-
-        @Override
-        public int getLayer2Col() {
-            return 0;
-        }
-
-        @Override
-        public int getLayer2Row() {
-            return 1;
+        public int[] getLayer2Coord() {
+            return new int[]{0,1};
         }
 
         @Override
         public int getScale() {
             return 2;
-        }
-
-        @Override
-        public int getSize() {
-            return 0;
         }
     }
 
@@ -79,37 +64,22 @@ class ObjectType {
         }
 
         @Override
-        public int getLayer1Col() {
-            return 1;
+        public int[] getLayer1Coord() {
+            return new int[]{1, 0};
         }
 
         @Override
-        public int getLayer1Row() {
-            return 0;
-        }
-
-        @Override
-        public int getLayer2Col() {
-            return 1;
-        }
-
-        @Override
-        public int getLayer2Row() {
-            return 1;
+        public int[] getLayer2Coord() {
+            return new int[]{1, 1};
         }
 
         @Override
         public int getScale() {
             return 2;
         }
-
-        @Override
-        public int getSize() {
-            return 0;
-        }
     }
 
-    private static class cCANNONBALL implements Movable, Sprite{
+    private static class cCANNONBALL implements Movable, Paintable {
         @Override
         public int getSize() {
             return 10;
@@ -131,18 +101,18 @@ class ObjectType {
         int getRecoil();
     }
 
-    interface Bitmap extends Sprite{
-        int getLayer1Col();
-        int getLayer1Row();
-        int getLayer2Col();
-        int getLayer2Row();
+    interface Bitmap extends Drawable {
+        int []getLayer1Coord();
+        int []getLayer2Coord();
         int getScale();
     }
 
-    interface Sprite{
+    interface Paintable extends Drawable{
         int getSize();
     }
 
+    interface Drawable {
+    }
 
     interface Movable {
         float getMaxSpeed();

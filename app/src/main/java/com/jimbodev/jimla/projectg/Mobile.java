@@ -5,7 +5,7 @@ class Mobile extends Stationary {
     float maxSpeed, maxForce;
     private Vector target;
 
-    Mobile(float x, float y, ObjectType.Sprite type, float maxSpeed, float maxForce, Vector target) {
+    Mobile(float x, float y, ObjectType.Paintable type, float maxSpeed, float maxForce, Vector target) {
         super(x, y, type);
         this.maxSpeed = maxSpeed;
         this.maxForce = maxForce;

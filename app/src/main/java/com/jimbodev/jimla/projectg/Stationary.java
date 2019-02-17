@@ -15,12 +15,11 @@ class Stationary extends Vector {
     int width = realWidth * 1;
     int height = realHeight * 1;
     private int sheetW = 659, sheetH = 359;
-    private int layer1Col;
-    private int layer1Row;
+    private int [] layer1Coord;
     Rect layer1Source, dest;
     private int layer1SourceX, layer1SourceY;
 
-    Stationary(float x, float y, ObjectType.Sprite type) {
+    Stationary(float x, float y, ObjectType.Drawable type) {
         super(x, y);
 
         setBounds(type);
@@ -33,27 +32,28 @@ class Stationary extends Vector {
     }
 
     void setLayer1Source(int frameCount) {
-        int row = layer1Row + (frameCount * layer1Row);
-        layer1SourceX = (realWidth * layer1Col) + layer1Col + 1;
-        layer1SourceY = (realHeight * row) + row + 1;
+        if (layer1Coord != null) {
+            int row = layer1Coord[1] + (frameCount * layer1Coord[1]);
+            layer1SourceX = (realWidth * layer1Coord[0]) + layer1Coord[0] + 1;
+            layer1SourceY = (realHeight * row) + row + 1;
 
-        layer1Source = new Rect(layer1SourceX, layer1SourceY, layer1SourceX + realWidth, layer1SourceY + realHeight);
+            layer1Source = new Rect(layer1SourceX, layer1SourceY, layer1SourceX + realWidth, layer1SourceY + realHeight);
+        }
     }
 
     static void setResources(Resources resources) {
         Stationary.resources = resources;
     }
 
-    private void setBounds(ObjectType.Sprite type) {
+    private void setBounds(ObjectType.Drawable type) {
         if (type instanceof ObjectType.Bitmap) {
             ObjectType.Bitmap type1 = (ObjectType.Bitmap) type;
             this.width = ObjectType.FRAMEWIDTH * type1.getScale();
             this.height = ObjectType.FRAMEHEIGHT * type1.getScale();
-            this.layer1Col = type1.getLayer1Col();
-            this.layer1Row = type1.getLayer1Row();
+            this.layer1Coord = type1.getLayer1Coord();
         }
         else
-            this.width = type.getSize();
+            this.width = ((ObjectType.Paintable)type).getSize();
     }
 
     private void createBitmap(Resources resources) {
