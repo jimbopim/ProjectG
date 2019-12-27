@@ -71,7 +71,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
                 bitmapBackground = BitmapFactory.decodeResource(
                         getResources(),
-                        R.drawable.battlefield1
+                        R.drawable.level1bg
                 );
 
                 Stationary.setResources(getResources());
