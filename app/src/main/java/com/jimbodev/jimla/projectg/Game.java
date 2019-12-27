@@ -78,8 +78,11 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
                 //Background bitmap decides ratio
                 RATIO = getRatio(bitmapBackground.getWidth(), bitmapBackground.getHeight());
+                Log.i("hejsan", "RATIO: " + RATIO);
                 rectBackground = new Rect(0, 0, (int) (bitmapBackground.getWidth() * RATIO),
                         (int) (bitmapBackground.getHeight() * RATIO));
+
+                Log.i("hejsan", "rectBackground " + rectBackground);
 
                 createMapNodes();
 
@@ -100,11 +103,14 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
     private float getRatio(int w, int h) {
         // Dimension with greatest overhang outside screen decides the RATIO
-        if (w - WIDTH > h - HEIGHT) {
+        if (w - WIDTH < h - HEIGHT) {
+            Log.i("hejsan", "WIDTH: " + WIDTH + " HEIGHT: " + HEIGHT);
             return (float) WIDTH / w;
         }
-        else
+        else {
+            Log.i("hejsan", "WIDTH111: " + WIDTH + " HEIGHT111: " + HEIGHT);
             return (float) HEIGHT / h;
+        }
     }
 
     private void createMapNodes() {
