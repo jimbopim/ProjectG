@@ -148,13 +148,14 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             }
         }
 
+        startNode = nodes.get(startNodeX).get(startNodeY);
+        goalNode = nodes.get(goalNodeX).get(goalNodeY);
+
         updateNodes();
         createNavMesh();
     }
 
     private void updateNodes() {
-        startNode = nodes.get(startNodeX).get(startNodeY);
-        goalNode = nodes.get(goalNodeX).get(goalNodeY);
 
         for (ArrayList<Node> a : nodes) {
             for (Node n : a) {
