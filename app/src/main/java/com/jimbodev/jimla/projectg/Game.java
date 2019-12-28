@@ -48,6 +48,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
     ArrayList<Boid> boids;
     ArrayList<Building> attackers;
+    ArrayList<Stationary> mapObstacles;
     Building placedBuilding;
     ArrayList<Projectile> projectiles;
 
@@ -84,13 +85,15 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
                 Log.i("hejsan", "rectBackground " + rectBackground);
 
-                createMapNodes();
-
                 boids = new ArrayList<>();
                 attackers = new ArrayList<>();
+                mapObstacles = new ArrayList<>();
                 attackers.add(new Cannon(100, 200));
                 attackers.add(new ArrowShooter(100, 400));
+                mapObstacles.add(new Stationary(600, 300, ObjectType.LOGOBS));
                 projectiles = new ArrayList<>();
+
+                createMapNodes();
 
                 menu = new ConstructionMenu(attackers);
 
@@ -101,8 +104,19 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         });
     }
 
+    private void createNewObjectOnMap() {
+        attackers.add(placedBuilding);
+        adjustNodes();
+    }
+
+    private void adjustNodes() {
+        for (Building b : attackers) {
+            deleteNodesWithinRect(b.dest);
+        }
+    }
+
     private float getRatio(int w, int h) {
-        // Dimension with greatest overhang outside screen decides the RATIO
+        // Shortest side decides ratio
         if (w - WIDTH < h - HEIGHT) {
             Log.i("hejsan", "WIDTH: " + WIDTH + " HEIGHT: " + HEIGHT);
             return (float) WIDTH / w;
@@ -135,10 +149,22 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         }
 
         updateNodes();
-        dev();
+        createNavMesh();
     }
 
-    private void dev() {
+    private void updateNodes() {
+        startNode = nodes.get(startNodeX).get(startNodeY);
+        goalNode = nodes.get(goalNodeX).get(goalNodeY);
+
+        for (ArrayList<Node> a : nodes) {
+            for (Node n : a) {
+                if (n.isActive())
+                    n.connectNeighbours(nodes);
+            }
+        }
+    }
+
+    private void createNavMesh() {
         for (ArrayList<Node> a : nodes) {
             for (Node n : a) {
                 n.setActive(false);
@@ -152,14 +178,20 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
         }
     }
 
-    private void updateNodes() {
-        startNode = nodes.get(startNodeX).get(startNodeY);
-        goalNode = nodes.get(goalNodeX).get(goalNodeY);
 
-        for (ArrayList<Node> a : nodes) {
-            for (Node n : a) {
-                if (n.isActive())
-                    n.connectNeighbours(nodes);
+
+    private void deleteNodesWithinRect(Rect r) {
+        Log.i("hejsan", "delete");
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                if (nodes.get(i).get(j) != null && r.contains((int)nodes.get(i).get(j).getRealX(), (int) nodes.get(i).get(j).getRealY())){
+                    if (nodes.get(i).get(j) != startNode && nodes.get(i).get(j) != goalNode) {
+                        if (nodes.get(i).get(j).isActive()) {
+                            nodes.get(i).get(j).setActive(false);
+
+                        }
+                    }
+                }
             }
         }
     }
@@ -191,7 +223,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
         if(placedBuilding != null) {
             Log.i("hejsan", "kov");
-            attackers.add(placedBuilding);
+            createNewObjectOnMap();
             placedBuilding = null;
         }
 

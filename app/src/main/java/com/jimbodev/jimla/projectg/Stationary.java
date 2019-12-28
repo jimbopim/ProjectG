@@ -18,6 +18,15 @@ class Stationary extends Vector {
     private int [] layer1Coord;
     Rect layer1Source, dest;
     private int layer1SourceX, layer1SourceY;
+    private boolean obstacle = true;
+
+    public boolean isObstacle() {
+        return obstacle;
+    }
+
+    public void setObstacle(boolean obstacle) {
+        this.obstacle = obstacle;
+    }
 
     Stationary(float x, float y, ObjectType.Drawable type) {
         super(x, y);

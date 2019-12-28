@@ -3,10 +3,29 @@ package com.jimbodev.jimla.projectg;
 class ObjectType {
     final static int FRAMEWIDTH = 64, FRAMEHEIGHT = 64;
 
+    final static cLogObs LOGOBS = new cLogObs();
     final static cCANNON CANNON = new cCANNON();
     final static cARROWSHOOTER ARROWSHOOTER = new cARROWSHOOTER();
     final static cCANNONBALL CANNONBALL = new cCANNONBALL();
     final static cBOID BOID = new cBOID();
+
+    private static class cLogObs implements Obstacle, Bitmap {
+
+        @Override
+        public int[] getLayer1Coord() {
+            return new int[]{4, 0};
+        }
+
+        @Override
+        public int[] getLayer2Coord() {
+            return null;
+        }
+
+        @Override
+        public int getScale() {
+            return 2;
+        }
+    }
 
     private static class cBOID implements Movable, Paintable {
         @Override
@@ -94,6 +113,10 @@ class ObjectType {
         public float getMaxForce() {
             return 10;
         }
+    }
+
+    interface Obstacle {
+
     }
 
     interface Tower {
