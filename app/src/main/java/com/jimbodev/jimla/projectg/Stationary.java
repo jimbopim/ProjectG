@@ -10,10 +10,8 @@ class Stationary extends Vector {
     private static Resources resources;
     Bitmap bitmap;
     private boolean removable = false;
-    protected int realWidth = 64;
-    protected int realHeight = 64;
-    int width = realWidth * 1;
-    int height = realHeight * 1;
+    private int width;
+    private int height;
     private int sheetW = 659, sheetH = 359;
     private int [] layer1Coord;
     Rect layer1Source, dest;
@@ -32,7 +30,7 @@ class Stationary extends Vector {
         super(x, y);
 
         setBounds(type);
-        setLayer1Source(0);
+        setLayer1Source(0, type);
 
         createBitmap(resources);
 
@@ -40,13 +38,14 @@ class Stationary extends Vector {
         dest = new Rect((int) x, (int) y, (int) x + this.width, (int) y + this.height); //TODO * ratio
     }
 
-    void setLayer1Source(int frameCount) {
-        if (layer1Coord != null) {
+    void setLayer1Source(int frameCount, ObjectType.Drawable type) {
+        if (type instanceof ObjectType.Bitmap) {
+            ObjectType.Bitmap type1 = (ObjectType.Bitmap) type;
             int row = layer1Coord[1] + (frameCount * layer1Coord[1]);
-            layer1SourceX = (realWidth * layer1Coord[0]) + layer1Coord[0] + 1;
-            layer1SourceY = (realHeight * row) + row + 1;
+            layer1SourceX = (type1.getSourceSizeX() * layer1Coord[0]) + layer1Coord[0] + 1;
+            layer1SourceY = (type1.getSourceSizeY() * row) + row + 1;
 
-            layer1Source = new Rect(layer1SourceX, layer1SourceY, layer1SourceX + realWidth, layer1SourceY + realHeight);
+            layer1Source = new Rect(layer1SourceX, layer1SourceY, layer1SourceX + type1.getSourceSizeX(), layer1SourceY + type1.getSourceSizeY());
         }
     }
 
@@ -57,12 +56,14 @@ class Stationary extends Vector {
     private void setBounds(ObjectType.Drawable type) {
         if (type instanceof ObjectType.Bitmap) {
             ObjectType.Bitmap type1 = (ObjectType.Bitmap) type;
-            this.width = ObjectType.FRAMEWIDTH * type1.getScale();
-            this.height = ObjectType.FRAMEHEIGHT * type1.getScale();
+            this.width = type1.getSourceSizeX() * type1.getScale();
+            this.height = type1.getSourceSizeY() * type1.getScale();
             this.layer1Coord = type1.getLayer1Coord();
         }
-        else
-            this.width = ((ObjectType.Paintable)type).getSize();
+        else {
+            this.width = ((ObjectType.Paintable) type).getSize();
+            this.height = ((ObjectType.Paintable) type).getSize();
+        }
     }
 
     private void createBitmap(Resources resources) {

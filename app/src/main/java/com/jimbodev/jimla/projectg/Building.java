@@ -13,15 +13,16 @@ abstract class Building extends Stationary {
         super(x, y, type);
         this.layer2Coord = type.getLayer2Coord();
 
-        setLayer2Source(0);
+        setLayer2Source(0, type);
     }
 
-    void setLayer2Source(int frameCount) {
-        int row = layer2Coord[1] + frameCount;
-        layer2SourceX = (realWidth * layer2Coord[0]) + layer2Coord[0] + 1;
-        layer2SourceY = (realHeight * row) + row + 1;
+    void setLayer2Source(int frameCount, ObjectType.Bitmap type) {
 
-        layer2Source = new Rect(layer2SourceX, layer2SourceY, layer2SourceX + realWidth, layer2SourceY + realHeight);
+        int row = layer2Coord[1] + frameCount;
+        layer2SourceX = (ObjectType.FRAMEWIDTH * layer2Coord[0]) + layer2Coord[0] + 1;
+        layer2SourceY = (ObjectType.FRAMEHEIGHT * row) + row + 1;
+
+        layer2Source = new Rect(layer2SourceX, layer2SourceY, layer2SourceX + type.getSourceSizeX(), layer2SourceY + type.getSourceSizeY());
     }
 
     void update(Vector target) {

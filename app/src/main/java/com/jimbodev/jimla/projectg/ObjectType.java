@@ -13,7 +13,7 @@ class ObjectType {
 
         @Override
         public int[] getLayer1Coord() {
-            return new int[]{4, 0};
+            return new int[]{0, 4};
         }
 
         @Override
@@ -24,6 +24,16 @@ class ObjectType {
         @Override
         public int getScale() {
             return 2;
+        }
+
+        @Override
+        public int getSourceSizeX() {
+            return 95;
+        }
+
+        @Override
+        public int getSourceSizeY() {
+            return 43;
         }
     }
 
@@ -69,6 +79,16 @@ class ObjectType {
         public int getScale() {
             return 2;
         }
+
+        @Override
+        public int getSourceSizeX() {
+            return 64;
+        }
+
+        @Override
+        public int getSourceSizeY() {
+            return 64;
+        }
     }
 
     private static class cARROWSHOOTER implements Tower, Bitmap {
@@ -95,6 +115,16 @@ class ObjectType {
         @Override
         public int getScale() {
             return 2;
+        }
+
+        @Override
+        public int getSourceSizeX() {
+            return 64;
+        }
+
+        @Override
+        public int getSourceSizeY() {
+            return 64;
         }
     }
 
@@ -133,6 +163,8 @@ class ObjectType {
         int[] getLayer1Coord();
         int[] getLayer2Coord();
         int getScale();
+        int getSourceSizeX();
+        int getSourceSizeY();
     }
 
     interface Paintable extends Drawable {

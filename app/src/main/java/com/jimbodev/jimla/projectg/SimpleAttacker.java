@@ -41,7 +41,7 @@ class SimpleAttacker extends Building implements Attacker{
             updateFrame(timeLeft);
         }
         else
-            setLayer2Source(currentFrame = 0);
+            setLayer2Source(currentFrame = 0, );
     }
 
     void updateFrame(int timeLeft) {

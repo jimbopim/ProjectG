@@ -90,7 +90,7 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
                 mapObstacles = new ArrayList<>();
                 attackers.add(new Cannon(100, 200));
                 attackers.add(new ArrowShooter(100, 400));
-                mapObstacles.add(new Stationary(600, 300, ObjectType.LOGOBS));
+                mapObstacles.add(new Stationary(600, 500, ObjectType.LOGOBS));
                 projectiles = new ArrayList<>();
 
                 createMapNodes();
@@ -112,6 +112,10 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     private void adjustNodes() {
         for (Building b : attackers) {
             deleteNodesWithinRect(b.dest);
+        }
+
+        for(Stationary s : mapObstacles) {
+            deleteNodesWithinRect(s.dest);
         }
     }
 
@@ -156,7 +160,6 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
     }
 
     private void updateNodes() {
-
         for (ArrayList<Node> a : nodes) {
             for (Node n : a) {
                 if (n.isActive())
@@ -178,8 +181,6 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             nodes.get(a[0]).get(a[1]).setActive(true);
         }
     }
-
-
 
     private void deleteNodesWithinRect(Rect r) {
         Log.i("hejsan", "delete");
@@ -302,6 +303,9 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
             for (Building b : attackers)
                 b.show(canvas);
+
+            for (Stationary s : mapObstacles)
+                s.show(canvas);
 
             paint.setTextSize(50);
             paint.setStyle(Paint.Style.FILL);
