@@ -41,7 +41,7 @@ class SimpleAttacker extends Building implements Attacker{
             updateFrame(timeLeft);
         }
         else
-            setLayer2Source(currentFrame = 0, );
+            setLayer2Source(currentFrame = 0, (ObjectType.Bitmap) type);
     }
 
     void updateFrame(int timeLeft) {
@@ -56,7 +56,7 @@ class SimpleAttacker extends Building implements Attacker{
                 j++;
         }
 
-        setLayer2Source(currentFrame);
+        setLayer2Source(currentFrame, (ObjectType.Bitmap) type);
     }
 
     /*void updateFrame(int timeLeft) {

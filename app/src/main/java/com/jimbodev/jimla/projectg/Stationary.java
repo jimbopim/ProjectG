@@ -16,6 +16,7 @@ class Stationary extends Vector {
     private int [] layer1Coord;
     Rect layer1Source, dest;
     private int layer1SourceX, layer1SourceY;
+    protected ObjectType.Drawable type;
     private boolean obstacle = true;
 
     public boolean isObstacle() {
@@ -31,6 +32,7 @@ class Stationary extends Vector {
 
         setBounds(type);
         setLayer1Source(0, type);
+        this.type = type;
 
         createBitmap(resources);
 
