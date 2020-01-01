@@ -43,13 +43,23 @@ class Stationary extends Vector {
     void setLayer1Source(int frameCount, ObjectType.Drawable type) {
         if (type instanceof ObjectType.Bitmap) {
             ObjectType.Bitmap type1 = (ObjectType.Bitmap) type;
-            int row = layer1Coord[1] + (frameCount * layer1Coord[1]);
-            layer1SourceX = (type1.getSourceSizeX() * layer1Coord[0]) + layer1Coord[0] + 1;
-            layer1SourceY = (type1.getSourceSizeY() * row) + row + 1;
+            int frame = frameCount * ObjectType.FRAMEHEIGHT;
+            layer1SourceX = type1.getLayer1Coord()[0] + (type1.getLayer1Coord()[0] * ObjectType.FRAMEWIDTH);
+            layer1SourceY = type1.getLayer1Coord()[1] + (type1.getLayer1Coord()[1] * ObjectType.FRAMEHEIGHT + frame);
 
             layer1Source = new Rect(layer1SourceX, layer1SourceY, layer1SourceX + type1.getSourceSizeX(), layer1SourceY + type1.getSourceSizeY());
         }
     }
+
+    /*void setLayer1Source(int frameCount) {
+        if (layer1Coord != null) {
+            int row = layer1Coord[1] + (frameCount * layer1Coord[1]);
+            layer1SourceX = (realWidth * layer1Coord[0]) + layer1Coord[0] + 1;
+            layer1SourceY = (realHeight * row) + row + 1;
+
+            layer1Source = new Rect(layer1SourceX, layer1SourceY, layer1SourceX + realWidth, layer1SourceY + realHeight);
+        }
+    }*/
 
     static void setResources(Resources resources) {
         Stationary.resources = resources;

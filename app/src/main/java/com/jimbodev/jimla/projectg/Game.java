@@ -304,8 +304,10 @@ class Game extends SurfaceView implements Runnable, SurfaceHolder.Callback {
             for (Building b : attackers)
                 b.show(canvas);
 
-            for (Stationary s : mapObstacles)
+            for (Stationary s : mapObstacles) {
                 s.show(canvas);
+                //canvas.drawRect(s.dest, paint);
+            }
 
             paint.setTextSize(50);
             paint.setStyle(Paint.Style.FILL);
